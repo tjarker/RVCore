@@ -67,4 +67,11 @@ object Interfaces {
     val branchIndex = UInt(8.W)
   }
 
+  class memoryInterface extends Bundle {
+    val memOp = Output(UInt(4.W))
+    val wrData = Output(SInt(32.W))
+    val addr = Output(SInt(32.W))
+    val memOut = Input(SInt(32.W))
+  }
+
 }

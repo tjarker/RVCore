@@ -3,88 +3,18 @@ import chisel3.iotesters.OrderedDecoupledHWIOTester
 import chisel3.util._
 
 
-class Top extends Module{
+class PS2 extends Module{
   val io = IO(new Bundle{
     val data = Input(Bool())
     val ps2Clock = Input(Bool())
-    val sevData = Output(UInt(7.W))
-    val sevAn = Output(UInt(4.W))
   })
 
-  io.sevData := 0.U
-  io.sevAn := 0.U
-
-  def tickCounter(max: Int, tick: Bool) = {
-    val cntReg = RegInit(0.U(log2Ceil(max).W))
-    when(tick) {
-      cntReg := Mux(cntReg === max.U, 0.U, cntReg + 1.U)
-    }
-    cntReg
-  }
-  def tickGen(frequency: Int) = {
-    val cntReg = RegInit(0.U((if (frequency == 0 || log2Ceil(100000000 / frequency) == 0) 1 else log2Ceil(100000000 / frequency)).W))
-    val tick = cntReg === (if (frequency != 0) 100000000 / frequency else 0).U
-    cntReg := Mux(tick, 0.U, cntReg + 1.U)
-    tick
-  }
-
-  val counter = RegInit(0.U(16.W))
   val shiftReg = RegInit(0.U(11.W))
-  val outReg = RegInit(0.U(8.W))
   when(!io.ps2Clock && RegNext(io.ps2Clock)){
-    counter := counter + 1.U
     shiftReg := Cat(io.data, shiftReg(10,1))
-
   }
-
-  outReg := shiftReg(8,1)
-
-  val ticker = tickGen(200)
-  val sevAnCounter = tickCounter(3, ticker)
-
-  val hex2Sev = VecInit("b1000000".U,
-    "b1111001".U,
-    "b0100100".U,
-    "b0110000".U,
-    "b0011001".U,
-    "b0010010".U,
-    "b0000010".U,
-    "b1111000".U,
-    "b0000000".U,
-    "b0010000".U,
-    "b0001000".U,
-    "b0000011".U,
-    "b1000110".U,
-    "b0100001".U,
-    "b0000110".U,
-    "b0001110".U
-  )
-
-  //sevAn
-  switch(sevAnCounter) {
-    is(0.U) {
-      io.sevData := "b1111111".U
-      io.sevAn := "b0111".U
-    }
-    is(1.U) {
-      io.sevData := "b1111111".U
-      io.sevAn := "b1011".U
-    }
-    is(2.U) {
-      io.sevData := hex2Sev(outReg(7,4))
-      io.sevAn := "b1101".U
-    }
-    is(3.U) {
-
-      io.sevData := hex2Sev(outReg(3,0))
-      io.sevAn := "b1110".U
-    }
-  }
-
-
-
 }
 
 object Top extends App {
-  chisel3.Driver.execute(args, () => new Top)
+  (new chisel3.stage.ChiselStage).emitVerilog(new PS2())
 }

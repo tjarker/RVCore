@@ -5,20 +5,20 @@ import rvcore.submodules.{DataMemory0, DataMemory1}
 import chisel3._
 
 
-class MEM(memorySize: Int) extends MultiIOModule {
+class MEM extends MultiIOModule {
   val in = IO(Input(new EX_MEM))
   val out = IO(Output(new MEM_WB))
   val ctrl = IO(new Bundle {
     val rd = Output(UInt(5.W))
     val aluRes = Output(SInt(32.W))
+    val memBus = new memoryInterface
   })
-  val mem = Module(new DataMemory1(memorySize))
 
-  mem.io.memOp := in.mem
-  mem.io.address := in.aluRes.asUInt
-  mem.io.wrData := in.regOp2
+  ctrl.memBus.memOp := in.mem
+  ctrl.memBus.addr := in.aluRes.asUInt
+  ctrl.memBus.wrData := in.regOp2
 
-  out.memRes := mem.io.rdData
+  out.memRes := ctrl.memBus.memOut
 
   val delayedAluRes = RegNext(in.aluRes)
 

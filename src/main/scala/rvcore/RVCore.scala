@@ -7,17 +7,18 @@ import rvcore.submodules.{ForwardingUnit, HazardDetectionUnit}
 import chisel3._
 import chisel3.stage.ChiselGeneratorAnnotation
 
-class RVCore(program: Array[Int], memorySize: Int, branchPredictionScheme : String = "", simFlag: Boolean = true) extends Module {
+class RVCore(program: Array[Int], branchPredictionScheme : String = "", simFlag: Boolean = true) extends Module {
   val io = IO(new Bundle {
     val regFilePort = if (simFlag) Some(Output(Vec(32, SInt(32.W)))) else None
     val instr = Output(SInt(32.W))
+    val memBus = new memoryInterface
   })
 
   //pipeline stages
   val ifStage = Module(new IF(program, branchPredictionScheme))
   val idStage = Module(new ID)
   val exStage = Module(new EX)
-  val memStage = Module(new MEM(memorySize))
+  val memStage = Module(new MEM)
   val wbStage = Module(new WB)
 
   if(simFlag){
@@ -32,13 +33,13 @@ class RVCore(program: Array[Int], memorySize: Int, branchPredictionScheme : Stri
   val id_ex = RegInit(0.U.asTypeOf(new ID_EX))
   val ex_mem = RegInit(0.U.asTypeOf(new EX_MEM))
   val mem_wb = RegInit(0.U.asTypeOf(new MEM_WB))
+
   //IF stage connections
   ifStage.in <> exStage.ctrl.branchOut
   ifStage.ctrl.pcEn := hazardDetectionUnit.io.pcEn
   when(hazardDetectionUnit.io.enableIF_ID) {
     ifStage.out <> if_id
   }
-
 
   //ID stage connections
   hazardDetectionUnit.io.instr := idStage.ctrl.instr
@@ -75,6 +76,12 @@ class RVCore(program: Array[Int], memorySize: Int, branchPredictionScheme : Stri
   forwardingUnit.io.rd_WB := wbStage.ctrl.rd
   forwardingUnit.io.res_WB := wbStage.ctrl.res
   forwardingUnit.io.wb_WB := wbStage.out.wb
+
+  io.memBus.memOp := ex_mem.mem
+  io.memBus.addr := exStage.out.aluRes
+  io.memBus.wrData := ex_mem.regOp2
+
+  mem_wb.memRes := io.memBus.memOut
 
   // flushes
   when(hazardDetectionUnit.io.flushIF) {

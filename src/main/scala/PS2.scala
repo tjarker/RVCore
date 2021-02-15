@@ -15,6 +15,4 @@ class PS2 extends Module{
   }
 }
 
-object Top extends App {
-  (new chisel3.stage.ChiselStage).emitVerilog(new PS2())
-}
+

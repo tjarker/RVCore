@@ -27,7 +27,7 @@ class TestAll extends FreeSpec with ChiselScalatestTester {
 
   for(program <- programs){
     s"${program.name} should pass" in {
-      test(new RVCore(program.byteBinaries, 2097152)) { c =>
+      test(new RVCore(program.byteBinaries)) { c =>
         val wrapper = new RVPipedSimWrapper(c, program)
         wrapper.run()
       }
@@ -40,7 +40,7 @@ class TestSingle extends FreeSpec with ChiselScalatestTester {
   val program = BinaryLoader.loadProgramFromRes("loop")
 
   s"${program.name} should pass" in {
-    test(new RVCore(program.byteBinaries, 2097152)) { c =>
+    test(new RVCore(program.byteBinaries)) { c =>
       val wrapper = new RVPipedSimWrapper(c, program)
       wrapper.run()
     }

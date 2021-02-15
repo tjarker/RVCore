@@ -1,27 +1,48 @@
 import chisel3._
-import lib.Interfaces.{PS2Port, SevenSegment, VGAPort}
+import chisel3.util._
+import lib.Interfaces.SevenSegment
 import rvcore.RVCore
 import rvcore.lib.BinaryLoader
-import rvcore.submodules.DataMemory1
+import rvcore.lib.Helper.toUInt
 
 class Top extends Module{
-  val io = new Bundle{
-    val ps2 = new PS2Port
-    val svseg = new SevenSegment
-    val vga = new VGAPort
+  val io = IO(new Bundle{
+    val blink = Output(UInt(16.W))
+    val sev = Output(new SevenSegment)
+  })
+
+  val mp = Module(new RVCore(BinaryLoader.loadProgramFromRes("blink2").byteBinaries, simFlag = false))
+
+
+
+  val ram = Module(new RAM(4096))
+  mp.io.dataBus.rdData := ram.io.rdData
+  ram.io.addr := mp.io.dataBus.addr
+  ram.io.wrData := mp.io.dataBus.wrData
+  ram.io.we := VecInit(Seq.fill(4)(0.B))
+  ram.io.w := mp.io.dataBus.w
+  when(mp.io.dataBus.w && RegNext(mp.io.dataBus.addr <= 0x1000.U)){
+    ram.io.we := mp.io.dataBus.we
   }
 
-  val mp = Module(new RVCore(BinaryLoader.loadProgramFromRes("t11").byteBinaries, simFlag = false))
-
-  val ram = Module(new DataMemory1(186600))
-  ram.io.address := mp.io.memBus.addr
-  ram.io.wrData := mp.io.memBus.wrData
-  mp.io.memBus.memOut := ram.io.rdData
-  when(!mp.io.memBus.addr(31)){
-    ram.io.memOp := mp.io.memBus.memOp
-  }.otherwise{
-    ram.io.memOp := 0.U
+  val blinkReg = RegInit(0.U(16.W))
+  when(mp.io.dataBus.w && RegNext(mp.io.dataBus.addr === 0x2000.U)){//&
+    blinkReg := toUInt(mp.io.dataBus.wrData)(31,16)
   }
+  io.blink := blinkReg
 
-
+  val sev = Module(new SevenSeg)
+  sev.io.out <> io.sev
+  sev.io.in := blinkReg
+}
+/*
+// generate Verilog
+object Top extends App{
+  (new chisel3.stage.ChiselStage).execute(
+    Array("-X", "verilog"),
+    Seq(ChiselGeneratorAnnotation(() => new Top)))
+}
+*/
+object Top extends App {
+  (new chisel3.stage.ChiselStage).emitVerilog(new Top())
 }

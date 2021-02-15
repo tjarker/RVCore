@@ -1,7 +1,7 @@
 package rvcore
 
 import rvcore.PipelineStages._
-import rvcore.lib.BinaryLoader
+import rvcore.lib.{BinaryLoader, DataBusIO}
 import rvcore.lib.Interfaces._
 import rvcore.submodules.{ForwardingUnit, HazardDetectionUnit}
 import chisel3._
@@ -11,7 +11,7 @@ class RVCore(program: Array[Int], branchPredictionScheme : String = "", simFlag:
   val io = IO(new Bundle {
     val regFilePort = if (simFlag) Some(Output(Vec(32, SInt(32.W)))) else None
     val instr = Output(SInt(32.W))
-    val memBus = new memoryInterface
+    val dataBus = new DataBusIO
   })
 
   //pipeline stages
@@ -77,11 +77,7 @@ class RVCore(program: Array[Int], branchPredictionScheme : String = "", simFlag:
   forwardingUnit.io.res_WB := wbStage.ctrl.res
   forwardingUnit.io.wb_WB := wbStage.out.wb
 
-  io.memBus.memOp := ex_mem.mem
-  io.memBus.addr := exStage.out.aluRes
-  io.memBus.wrData := ex_mem.regOp2
-
-  mem_wb.memRes := io.memBus.memOut
+  io.dataBus <> memStage.dataBus
 
   // flushes
   when(hazardDetectionUnit.io.flushIF) {
@@ -90,13 +86,3 @@ class RVCore(program: Array[Int], branchPredictionScheme : String = "", simFlag:
 
 }
 
-// generate Verilog
-object RVCore {
-  def main(args: Array[String]): Unit = {
-    val program = BinaryLoader.loadProgramFromRes("addneg")
-    (new chisel3.stage.ChiselStage).execute(
-      Array("-X", "verilog"),
-      Seq(ChiselGeneratorAnnotation(() => new RVCore(program.byteBinaries,256, "", false))))
-
-  }
-}

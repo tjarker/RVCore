@@ -16,7 +16,7 @@ class BranchPredictionSchemeTesting extends FreeSpec with ChiselScalatestTester{
 
   s"${program.name} should pass co-simulation" in {
     for(predictionScheme <- predictionSchemes){
-      test(new RVCore(program.byteBinaries, 2097152, predictionScheme)){ c =>
+      test(new RVCore(program.byteBinaries, predictionScheme)){ c =>
         val wrapper = new RVPipedSimWrapper(c, program, false
         )
         cycles(i) = wrapper.run()

@@ -28,6 +28,9 @@ class ImmGen extends Module {
     is(LUI.opcode) {
       io.immediate := Utype.asSInt()
     }
+    is(AUIPC.opcode) {
+      io.immediate := Utype.asSInt()
+    }
     is(JAL.opcode) {
       io.immediate := Cat(VecInit(Seq.fill(10)(io.instruction(31))).asUInt(), UJtype, 0.U(2.W)).asSInt()
     }

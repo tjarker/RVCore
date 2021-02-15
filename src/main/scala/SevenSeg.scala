@@ -1,13 +1,12 @@
-package rvcore
-
 import chisel3._
 import chisel3.util._
+import lib.Interfaces
+import lib.Interfaces.SevenSegment
 
 class SevenSeg extends Module{
   val io = IO(new Bundle{
     val in = Input(UInt(16.W))
-    val sevAn = Output(UInt(4.W))
-    val sevData = Output(UInt(7.W))
+    val out = Output(new SevenSegment)
   })
 
   def tickCounter(max: Int, tick: Bool) = {
@@ -24,8 +23,8 @@ class SevenSeg extends Module{
     tick
   }
 
-  io.sevData := 0.U
-  io.sevAn := 0.U
+  io.out.data := 0.U
+  io.out.anode := 0.U
 
   val ticker = tickGen(200)
   val sevAnCounter = tickCounter(3, ticker)
@@ -52,20 +51,20 @@ class SevenSeg extends Module{
   //sevAn
   switch(sevAnCounter) {
     is(0.U) {
-      io.sevData := hex2Sev(io.in(15,12))
-      io.sevAn := "b0111".U
+      io.out.data  := hex2Sev(io.in(15,12))
+      io.out.anode := "b0111".U
     }
     is(1.U) {
-      io.sevData := hex2Sev(io.in(11,8))
-      io.sevAn := "b1011".U
+      io.out.data  := hex2Sev(io.in(11,8))
+      io.out.anode := "b1011".U
     }
     is(2.U) {
-      io.sevData := hex2Sev(io.in(7,4))
-      io.sevAn := "b1101".U
+      io.out.data  := hex2Sev(io.in(7,4))
+      io.out.anode := "b1101".U
     }
     is(3.U) {
-      io.sevData := hex2Sev(io.in(3,0))
-      io.sevAn := "b1110".U
+      io.out.data  := hex2Sev(io.in(3,0))
+      io.out.anode := "b1110".U
     }
   }
 }

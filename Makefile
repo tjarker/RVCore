@@ -19,3 +19,15 @@ ifdef f
 else
 	@echo "Define the C file you want to build with `f=fileName.s`"
 endif
+
+getFunctionAddr:
+ifdef func
+ifdef f 
+	$(eval ADDR=$(shell sh -c "riscv32-unknown-elf-objdump output/${f}/${f}.o -t | grep ${func} |cut -d ' ' -f 1"))
+	@echo 'address = ${ADDR}'
+else
+	@echo 'define a object file with `f=object.o`'
+endif
+else 
+	@echo 'define a function with `func=function`'
+endif

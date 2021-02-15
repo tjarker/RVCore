@@ -2,16 +2,16 @@ import chisel3._
 import chisel3.util._
 import lib.Interfaces.SevenSegment
 import rvcore.RVCore
-import rvcore.lib.BinaryLoader
+import rvcore.lib.{BinaryLoader, Program}
 import rvcore.lib.Helper.toUInt
 
-class Top extends Module{
+class Top(program: Program) extends Module{
   val io = IO(new Bundle{
     val blink = Output(UInt(16.W))
     val sev = Output(new SevenSegment)
   })
 
-  val mp = Module(new RVCore(BinaryLoader.loadProgramFromRes("blink2").byteBinaries, simFlag = false))
+  val mp = Module(new RVCore(program.byteBinaries, simFlag = false))
 
 
 
@@ -44,5 +44,11 @@ object Top extends App{
 }
 */
 object Top extends App {
-  (new chisel3.stage.ChiselStage).emitVerilog(new Top())
+  if(args.length == 0) {
+    println("Need a file")
+    sys.exit(-1)
+  }else{
+    val program = BinaryLoader.loadProgram(args(0))
+    chisel3.Driver.execute(Array(args(1),args(2)), () => new Top(program))
+  }
 }

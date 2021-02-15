@@ -35,14 +35,7 @@ class Top(program: Program) extends Module{
   sev.io.out <> io.sev
   sev.io.in := blinkReg
 }
-/*
-// generate Verilog
-object Top extends App{
-  (new chisel3.stage.ChiselStage).execute(
-    Array("-X", "verilog"),
-    Seq(ChiselGeneratorAnnotation(() => new Top)))
-}
-*/
+
 object Top extends App {
   if(args.length == 0) {
     println("Need a file")

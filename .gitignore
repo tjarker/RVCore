@@ -3,8 +3,6 @@
 /project
 /test_run_dir
 /.bsp
-*.v
 *.fir
 *.anno.json
 /vivado
-/output

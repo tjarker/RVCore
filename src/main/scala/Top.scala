@@ -12,6 +12,7 @@ class Top(program: Program) extends Module{
     val blink = Output(UInt(16.W))
     val sev = Output(new SevenSegment)
     val ps2 = Input(new PS2Port)
+    val btn = Input(Bool())
   })
 
   val mp = Module(new RVCore(program.byteBinaries, simFlag = false))
@@ -39,6 +40,16 @@ class Top(program: Program) extends Module{
     mp.io.dataBus.rdData := Seq.fill(4)(0.U)
     mp.io.dataBus.rdData(0) := key.bus.data
     key.bus.clear := 1.B
+  }
+
+  val btnReg = RegInit(0.B)
+  when(io.btn){
+    btnReg := 1.B
+  }
+  when(RegNext(mp.io.dataBus.addr === 0x2300.U)){
+    mp.io.dataBus.rdData := Seq.fill(4)(0.U)
+    mp.io.dataBus.rdData(0) := btnReg.asUInt
+    btnReg := 0.B
   }
 
   val blinkReg = RegInit(0.U(16.W))

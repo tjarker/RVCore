@@ -27,10 +27,10 @@ class RegFile extends RegFileType {
   io.registerS1Data := regFile(io.registerS1Index)
   io.registerS2Data := regFile(io.registerS2Index)
 
-  when(io.registerS1Index === io.registerWIndex && io.writeEn) {
+  when(io.registerS1Index === io.registerWIndex && io.registerS1Index =/= 0.U && io.writeEn) {
     io.registerS1Data := io.registerWData
   }
-  when(io.registerS2Index === io.registerWIndex && io.writeEn) {
+  when(io.registerS2Index === io.registerWIndex && io.registerS2Index =/= 0.U && io.writeEn) {
     io.registerS2Data := io.registerWData
   }
 

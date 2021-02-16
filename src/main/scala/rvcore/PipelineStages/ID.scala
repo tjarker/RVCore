@@ -196,6 +196,7 @@ class ID extends MultiIOModule {
     out.wb := 0.U
     out.aluOp := 0.U
     out.mem := 0.U
+    out.wbSrc := 0.B
     out.pcSrc := false.B
   }
 }

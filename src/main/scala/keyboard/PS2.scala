@@ -13,15 +13,13 @@ class PS2 extends MultiIOModule{
     val clear = Input(Bool())
   })
 
+  // TODO: add a time out counter that resets count reg when no rising edge has occurred in a long time -> resynchronization
+
   val buffer = Module(new RingBuffer(8,16))
   buffer.io.enq.write := 0.B
 
   val shiftReg = RegInit(0.U(11.W))
   val countReg = RegInit(0.U(4.W))
-
-  when(countReg === 10.U && bus.clear) {
-    countReg := 0.U
-  }
 
   buffer.io.enq.data := Cat(ps2.data, shiftReg(10,1))(8,1)
 
@@ -32,7 +30,7 @@ class PS2 extends MultiIOModule{
   when(!ps2.clk && RegNext(ps2.clk)){
     countReg := countReg + 1.U
     shiftReg := Cat(ps2.data, shiftReg(10,1))
-    when(countReg === 9.U){
+    when(countReg >= 10.U){
       countReg := 0.U
       when(!buffer.io.enq.full){
         buffer.io.enq.write := 1.B

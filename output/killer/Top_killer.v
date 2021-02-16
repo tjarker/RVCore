@@ -1952,15 +1952,15 @@ module HazardDetectionUnit(
   input         io_wbSrc_EX,
   input         io_branch_EX
 );
-  wire  _T_1 = io_rd_EX == io_instr[19:15]; // @[HazardDetectionUnit.scala 22:18]
-  wire  _T_3 = io_rd_EX == io_instr[24:20]; // @[HazardDetectionUnit.scala 22:51]
-  wire  _T_4 = _T_1 | _T_3; // @[HazardDetectionUnit.scala 22:39]
-  wire  _T_5 = _T_4 & io_wbSrc_EX; // @[HazardDetectionUnit.scala 22:73]
-  wire  _GEN_0 = _T_5 ? 1'h0 : 1'h1; // @[HazardDetectionUnit.scala 22:89]
-  assign io_pcEn = _T_5 ? 1'h0 : 1'h1; // @[HazardDetectionUnit.scala 17:11 HazardDetectionUnit.scala 23:13]
-  assign io_flushIF = io_branch_EX; // @[HazardDetectionUnit.scala 18:14 HazardDetectionUnit.scala 29:16]
-  assign io_flushID = io_branch_EX | _T_5; // @[HazardDetectionUnit.scala 19:14 HazardDetectionUnit.scala 24:16 HazardDetectionUnit.scala 30:16]
-  assign io_enableIF_ID = io_branch_EX ? 1'h0 : _GEN_0; // @[HazardDetectionUnit.scala 20:18 HazardDetectionUnit.scala 25:20 HazardDetectionUnit.scala 31:20]
+  wire  rs1IsAccessed = io_rd_EX == io_instr[19:15]; // @[HazardDetectionUnit.scala 22:32]
+  wire  rs2IsAccessed = io_rd_EX == io_instr[24:20]; // @[HazardDetectionUnit.scala 23:32]
+  wire  _T_2 = rs1IsAccessed | rs2IsAccessed; // @[HazardDetectionUnit.scala 24:23]
+  wire  _T_3 = _T_2 & io_wbSrc_EX; // @[HazardDetectionUnit.scala 24:41]
+  wire  _GEN_0 = _T_3 ? 1'h0 : 1'h1; // @[HazardDetectionUnit.scala 24:57]
+  assign io_pcEn = _T_3 ? 1'h0 : 1'h1; // @[HazardDetectionUnit.scala 17:11 HazardDetectionUnit.scala 25:13]
+  assign io_flushIF = io_branch_EX; // @[HazardDetectionUnit.scala 18:14 HazardDetectionUnit.scala 31:16]
+  assign io_flushID = io_branch_EX | _T_3; // @[HazardDetectionUnit.scala 19:14 HazardDetectionUnit.scala 26:16 HazardDetectionUnit.scala 32:16]
+  assign io_enableIF_ID = io_branch_EX ? 1'h0 : _GEN_0; // @[HazardDetectionUnit.scala 20:18 HazardDetectionUnit.scala 27:20 HazardDetectionUnit.scala 33:20]
 endmodule
 module RVCore(
   input         clock,

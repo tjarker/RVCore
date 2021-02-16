@@ -17,15 +17,14 @@ void write7Seg(int c){
 int main(){
     int i = 0;
     write7Seg(0xBEEF);
-    /*for(i = 0; i < 5000000; i++){
-
-	}*/
+    for(i = 0; i < 8000000; i++){}
     write7Seg(0x0000);
     while(1){
-        write7Seg(hasChar());
-        for(i = 0; i < 6000000; i++){
-
-	    }
+        if(hasChar()){
+            write7Seg(getChar());
+            for(i = 0; i < 9000000; i++){}
+            write7Seg(0x0000);
+        }
     }
     return 0;
 }

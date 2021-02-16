@@ -12,9 +12,6 @@ object Interfaces {
 
 
 
-  class PS2Port extends Bundle {
-    val clk = Bool()
-    val data = Bool()
-  }
+
 
 }

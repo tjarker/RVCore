@@ -18,8 +18,12 @@ class HazardDetectionUnit extends Module {
   io.flushIF := false.B
   io.flushID := false.B
   io.enableIF_ID := true.B
-
-  when((io.rd_EX === io.instr(19, 15) || io.rd_EX === io.instr(24, 20)) && io.wbSrc_EX) {
+// if one of the registers accessed in ID are waiting for a memory result => wait one cycle
+  val rs1 = io.instr(19, 15)
+  val rs2 = io.instr(24, 20)
+  val rs1IsAccessed = io.rd_EX === rs1
+  val rs2IsAccessed = io.rd_EX === rs2
+  when((rs1IsAccessed || rs2IsAccessed) && io.wbSrc_EX) { //io.wbSrc_EX = we have a mem access in ex
     io.pcEn := false.B
     io.flushID := true.B
     io.enableIF_ID := false.B

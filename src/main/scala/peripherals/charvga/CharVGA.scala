@@ -1,6 +1,6 @@
-package charvga
+package peripherals.charvga
 
-import charvga.lib.Interfaces.VGAPort
+import peripherals.charvga.lib.Interfaces.VGAPort
 import chisel3._
 import chisel3.util._
 

@@ -1,12 +1,12 @@
+package peripherals.sevenseg
+
 import chisel3._
 import chisel3.util._
-import lib.Interfaces
-import lib.Interfaces.SevenSegment
 
 class SevenSeg extends Module{
   val io = IO(new Bundle{
     val in = Input(UInt(16.W))
-    val out = Output(new SevenSegment)
+    val out = Output(new SevenSegmentIO)
   })
 
   def tickCounter(max: Int, tick: Bool) = {

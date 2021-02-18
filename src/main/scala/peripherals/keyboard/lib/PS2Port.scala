@@ -1,4 +1,4 @@
-package keyboard.lib
+package peripherals.keyboard.lib
 
 import chisel3._
 

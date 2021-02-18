@@ -10,8 +10,9 @@ import rvcore.lib.Helper._
 class MEM extends MultiIOModule {
   val in = IO(Input(new EX_MEM))
   val out = IO(Output(new MEM_WB))
-  val dataBus = IO(new DataBusIO)
+  val dataBus = IO(Flipped(new DataBusIO))
   val ctrl = IO(new Bundle {
+    val outputAddr = Input(Bool())
     val rd = Output(UInt(5.W))
     val aluRes = Output(SInt(32.W))
   })
@@ -32,10 +33,10 @@ class MEM extends MultiIOModule {
       }
     }
   }
-  dataBus.addr := in.aluRes.asUInt
-  dataBus.wrData := toByteVec(in.regOp2.asUInt)
+  dataBus.addr := Mux(ctrl.outputAddr, in.aluRes.asUInt, 0.U)
+  dataBus.wrData := in.regOp2.asUInt
 
-  val rdData = dataBus.rdData
+  val rdData = toByteVec(dataBus.rdData)
 
   out.memRes := 0.S
   switch(in.mem(1, 0)) {

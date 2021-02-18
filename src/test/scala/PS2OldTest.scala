@@ -1,11 +1,10 @@
 import chiseltest._
 import chisel3._
-import keyboard.PS2
-import keyboard.lib.PS2Port
 import org.scalatest.FreeSpec
+import peripherals.keyboard.PS2_old
 import rvcore.submodules.DataMemory1
 
-class PS2Test extends FreeSpec with ChiselScalatestTester{
+class PS2OldTest extends FreeSpec with ChiselScalatestTester{
   def parity(num: Int) : Boolean = {
     var isOdd = true
     var x = num
@@ -19,7 +18,7 @@ class PS2Test extends FreeSpec with ChiselScalatestTester{
     }
     return isOdd
   }
-  def sendBit(dut: PS2, bit: Boolean) : Unit = {
+  def sendBit(dut: PS2_old, bit: Boolean) : Unit = {
     dut.ps2.clk.poke(0.B)
     dut.ps2.data.poke(bit.B)
 
@@ -28,7 +27,7 @@ class PS2Test extends FreeSpec with ChiselScalatestTester{
     dut.ps2.clk.poke(1.B)
     dut.clock.step(1)
   }
-  def sendMsg(dut: PS2, char: Int) : Unit = {
+  def sendMsg(dut: PS2_old, char: Int) : Unit = {
     // send start bit
     sendBit(dut,false)
 
@@ -43,7 +42,7 @@ class PS2Test extends FreeSpec with ChiselScalatestTester{
     // send stop bit
     sendBit(dut,false)
   }
-  def readChar(dut: PS2) : Int = {
+  def readChar(dut: PS2_old) : Int = {
     dut.bus.clear.poke(1.B)
     val read = dut.bus.data.peek.litValue
     dut.clock.step(1)
@@ -51,7 +50,7 @@ class PS2Test extends FreeSpec with ChiselScalatestTester{
     return read.toInt
   }
   "PS2 should pass" in {
-    test(new PS2){ dut =>
+    test(new PS2_old){ dut =>
 
       dut.ps2.clk.poke(1.B)
       dut.clock.step(10)

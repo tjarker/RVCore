@@ -1,11 +1,12 @@
-package keyboard
+package peripherals.keyboard
 
+import util.RingBuffer
 import chisel3._
 import chisel3.util._
-import keyboard.lib.PS2Port
+import peripherals.keyboard.lib.PS2Port
 
 
-class PS2 extends MultiIOModule{
+class PS2_old extends MultiIOModule{
   val ps2 = IO(Input(new PS2Port))
   val bus = IO(new Bundle{
     val data = Output(UInt(8.W))

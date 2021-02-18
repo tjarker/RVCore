@@ -11,7 +11,7 @@ class RVCore(program: Array[Int], branchPredictionScheme : String = "", simFlag:
   val io = IO(new Bundle {
     val regFilePort = if (simFlag) Some(Output(Vec(32, SInt(32.W)))) else None
     val instr = Output(SInt(32.W))
-    val dataBus = new DataBusIO
+    val dataBus = Flipped(new DataBusIO)
   })
 
   //pipeline stages
@@ -66,6 +66,7 @@ class RVCore(program: Array[Int], branchPredictionScheme : String = "", simFlag:
   //MEM stage connections
   memStage.in <> ex_mem
   memStage.in.aluRes := exStage.out.aluRes
+  memStage.ctrl.outputAddr := exStage.out.mem =/= 0.U
   memStage.out <> mem_wb
   forwardingUnit.io.rd_MEM := memStage.ctrl.rd
   forwardingUnit.io.aluRes_MEM := memStage.ctrl.aluRes

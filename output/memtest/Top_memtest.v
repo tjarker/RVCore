@@ -1295,11 +1295,15 @@ module RegFile(
   wire [31:0] _GEN_126 = 5'h1e == io_registerS2Index ? $signed(regFile_30) : $signed(_GEN_125); // @[RegFile.scala 28:21]
   wire [31:0] _GEN_127 = 5'h1f == io_registerS2Index ? $signed(regFile_31) : $signed(_GEN_126); // @[RegFile.scala 28:21]
   wire  _T_1 = io_registerS1Index == io_registerWIndex; // @[RegFile.scala 30:27]
-  wire  _T_2 = _T_1 & io_writeEn; // @[RegFile.scala 30:49]
-  wire  _T_3 = io_registerS2Index == io_registerWIndex; // @[RegFile.scala 33:27]
-  wire  _T_4 = _T_3 & io_writeEn; // @[RegFile.scala 33:49]
-  assign io_registerS1Data = _T_2 ? $signed(io_registerWData) : $signed(_GEN_95); // @[RegFile.scala 27:21 RegFile.scala 31:23]
-  assign io_registerS2Data = _T_4 ? $signed(io_registerWData) : $signed(_GEN_127); // @[RegFile.scala 28:21 RegFile.scala 34:23]
+  wire  _T_2 = io_registerS1Index != 5'h0; // @[RegFile.scala 30:71]
+  wire  _T_3 = _T_1 & _T_2; // @[RegFile.scala 30:49]
+  wire  _T_4 = _T_3 & io_writeEn; // @[RegFile.scala 30:79]
+  wire  _T_5 = io_registerS2Index == io_registerWIndex; // @[RegFile.scala 33:27]
+  wire  _T_6 = io_registerS2Index != 5'h0; // @[RegFile.scala 33:71]
+  wire  _T_7 = _T_5 & _T_6; // @[RegFile.scala 33:49]
+  wire  _T_8 = _T_7 & io_writeEn; // @[RegFile.scala 33:79]
+  assign io_registerS1Data = _T_4 ? $signed(io_registerWData) : $signed(_GEN_95); // @[RegFile.scala 27:21 RegFile.scala 31:23]
+  assign io_registerS2Data = _T_8 ? $signed(io_registerWData) : $signed(_GEN_127); // @[RegFile.scala 28:21 RegFile.scala 34:23]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -1800,9 +1804,9 @@ module ID(
   assign out_aluSrc1 = _T_1 ? 2'h0 : _GEN_64; // @[ID.scala 52:15 ID.scala 167:19 ID.scala 172:19 ID.scala 181:19 ID.scala 188:19]
   assign out_aluSrc2 = _T_1 ? 2'h1 : _GEN_60; // @[ID.scala 53:15 ID.scala 63:19 ID.scala 84:19 ID.scala 99:19 ID.scala 168:19 ID.scala 173:19 ID.scala 182:19 ID.scala 189:19]
   assign out_brSrc = _T_1 ? 1'h0 : _GEN_66; // @[ID.scala 58:13 ID.scala 187:17]
-  assign out_pcSrc = ctrl_flushID ? 1'h0 : _GEN_73; // @[ID.scala 56:13 ID.scala 177:17 ID.scala 183:17 ID.scala 190:17 ID.scala 199:15]
+  assign out_pcSrc = ctrl_flushID ? 1'h0 : _GEN_73; // @[ID.scala 56:13 ID.scala 177:17 ID.scala 183:17 ID.scala 190:17 ID.scala 200:15]
   assign out_wb = ctrl_flushID ? 1'h0 : _GEN_67; // @[ID.scala 51:10 ID.scala 62:14 ID.scala 98:14 ID.scala 131:14 ID.scala 166:14 ID.scala 171:14 ID.scala 176:14 ID.scala 180:14 ID.scala 186:14 ID.scala 196:12]
-  assign out_wbSrc = 7'h3 == opcode; // @[ID.scala 57:13 ID.scala 64:17]
+  assign out_wbSrc = ctrl_flushID ? 1'h0 : _T_1; // @[ID.scala 57:13 ID.scala 64:17 ID.scala 199:15]
   assign out_mem = ctrl_flushID ? 4'h0 : _GEN_70; // @[ID.scala 55:11 ID.scala 67:19 ID.scala 70:19 ID.scala 73:19 ID.scala 76:19 ID.scala 79:19 ID.scala 87:19 ID.scala 90:19 ID.scala 93:19 ID.scala 198:13]
   assign out_jump = opcode[2]; // @[ID.scala 31:12]
   assign out_funct3 = in_instr[14:12]; // @[ID.scala 32:14]
@@ -1982,14 +1986,8 @@ module MEM(
   output        out_wb,
   output        out_wbSrc,
   output [31:0] dataBus_addr,
-  input  [7:0]  dataBus_rdData_0,
-  input  [7:0]  dataBus_rdData_1,
-  input  [7:0]  dataBus_rdData_2,
-  input  [7:0]  dataBus_rdData_3,
-  output [7:0]  dataBus_wrData_0,
-  output [7:0]  dataBus_wrData_1,
-  output [7:0]  dataBus_wrData_2,
-  output [7:0]  dataBus_wrData_3,
+  input  [31:0] dataBus_rdData,
+  output [31:0] dataBus_wrData,
   output        dataBus_we_0,
   output        dataBus_we_1,
   output        dataBus_we_2,
@@ -2009,29 +2007,29 @@ module MEM(
   wire  _GEN_8 = _T_4 | _GEN_4; // @[Conditional.scala 40:58]
   wire  _GEN_9 = _T_4 ? 1'h0 : _GEN_4; // @[Conditional.scala 40:58]
   wire  _GEN_10 = _T_4 ? 1'h0 : _GEN_6; // @[Conditional.scala 40:58]
-  wire [31:0] _T_11 = in_regOp2; // @[MEM.scala 36:41]
-  wire  _T_21 = in_mem[2] & dataBus_rdData_0[7]; // @[MEM.scala 43:56]
-  wire [5:0] _T_96 = {_T_21,_T_21,_T_21,_T_21,_T_21,_T_21}; // @[MEM.scala 43:73]
-  wire [11:0] _T_102 = {_T_21,_T_21,_T_21,_T_21,_T_21,_T_21,_T_96}; // @[MEM.scala 43:73]
-  wire [31:0] _T_116 = {_T_21,_T_21,_T_21,_T_21,_T_21,_T_21,_T_96,_T_102,dataBus_rdData_0}; // @[MEM.scala 43:92]
-  wire  _T_120 = in_mem[2] & dataBus_rdData_1[7]; // @[MEM.scala 46:56]
-  wire [7:0] _T_173 = {_T_120,_T_120,_T_120,_T_120,_T_120,_T_120,_T_120,_T_120}; // @[MEM.scala 46:73]
-  wire [23:0] _T_182 = {_T_120,_T_120,_T_120,_T_120,_T_120,_T_120,_T_120,_T_120,_T_173,dataBus_rdData_1}; // @[Cat.scala 29:58]
-  wire [31:0] _T_184 = {_T_182,dataBus_rdData_0}; // @[MEM.scala 46:103]
-  wire [31:0] _T_189 = {dataBus_rdData_3,dataBus_rdData_2,dataBus_rdData_1,dataBus_rdData_0}; // @[MEM.scala 49:72]
-  wire [31:0] _GEN_16 = _T_8 ? $signed(_T_189) : $signed(32'sh0); // @[Conditional.scala 39:67]
-  wire [31:0] _GEN_17 = _T_6 ? $signed(_T_184) : $signed(_GEN_16); // @[Conditional.scala 39:67]
+  wire [7:0] rdData_0 = dataBus_rdData[7:0]; // @[DataBusIO.scala 9:23]
+  wire [7:0] rdData_1 = dataBus_rdData[15:8]; // @[DataBusIO.scala 9:32]
+  wire [7:0] rdData_2 = dataBus_rdData[23:16]; // @[DataBusIO.scala 9:42]
+  wire [7:0] rdData_3 = dataBus_rdData[31:24]; // @[DataBusIO.scala 9:53]
+  wire  _T_20 = in_mem[2] & rdData_0[7]; // @[MEM.scala 43:56]
+  wire [5:0] _T_95 = {_T_20,_T_20,_T_20,_T_20,_T_20,_T_20}; // @[MEM.scala 43:73]
+  wire [11:0] _T_101 = {_T_20,_T_20,_T_20,_T_20,_T_20,_T_20,_T_95}; // @[MEM.scala 43:73]
+  wire [31:0] _T_115 = {_T_20,_T_20,_T_20,_T_20,_T_20,_T_20,_T_95,_T_101,rdData_0}; // @[MEM.scala 43:92]
+  wire  _T_119 = in_mem[2] & rdData_1[7]; // @[MEM.scala 46:56]
+  wire [7:0] _T_172 = {_T_119,_T_119,_T_119,_T_119,_T_119,_T_119,_T_119,_T_119}; // @[MEM.scala 46:73]
+  wire [23:0] _T_181 = {_T_119,_T_119,_T_119,_T_119,_T_119,_T_119,_T_119,_T_119,_T_172,rdData_1}; // @[Cat.scala 29:58]
+  wire [31:0] _T_183 = {_T_181,rdData_0}; // @[MEM.scala 46:103]
+  wire [31:0] _T_188 = {rdData_3,rdData_2,rdData_1,rdData_0}; // @[MEM.scala 49:72]
+  wire [31:0] _GEN_16 = _T_8 ? $signed(_T_188) : $signed(32'sh0); // @[Conditional.scala 39:67]
+  wire [31:0] _GEN_17 = _T_6 ? $signed(_T_183) : $signed(_GEN_16); // @[Conditional.scala 39:67]
   reg [31:0] delayedAluRes; // @[MEM.scala 53:30]
-  assign out_memRes = _T_4 ? $signed(_T_116) : $signed(_GEN_17); // @[MEM.scala 40:14 MEM.scala 43:18 MEM.scala 46:18 MEM.scala 49:18]
+  assign out_memRes = _T_4 ? $signed(_T_115) : $signed(_GEN_17); // @[MEM.scala 40:14 MEM.scala 43:18 MEM.scala 46:18 MEM.scala 49:18]
   assign out_aluRes = delayedAluRes; // @[MEM.scala 58:14]
   assign out_rd = in_rd; // @[MEM.scala 57:10]
   assign out_wb = in_wb; // @[MEM.scala 55:10]
   assign out_wbSrc = in_wbSrc; // @[MEM.scala 56:13]
   assign dataBus_addr = in_aluRes; // @[MEM.scala 35:16]
-  assign dataBus_wrData_0 = _T_11[7:0]; // @[MEM.scala 36:18]
-  assign dataBus_wrData_1 = _T_11[15:8]; // @[MEM.scala 36:18]
-  assign dataBus_wrData_2 = _T_11[23:16]; // @[MEM.scala 36:18]
-  assign dataBus_wrData_3 = _T_11[31:24]; // @[MEM.scala 36:18]
+  assign dataBus_wrData = in_regOp2; // @[MEM.scala 36:18]
   assign dataBus_we_0 = in_mem[3] & _GEN_8; // @[MEM.scala 20:14 MEM.scala 25:20 MEM.scala 28:20 MEM.scala 31:20]
   assign dataBus_we_1 = in_mem[3] & _GEN_9; // @[MEM.scala 20:14 MEM.scala 25:20 MEM.scala 28:20 MEM.scala 31:20]
   assign dataBus_we_2 = in_mem[3] & _GEN_10; // @[MEM.scala 20:14 MEM.scala 25:20 MEM.scala 28:20 MEM.scala 31:20]
@@ -2144,28 +2142,24 @@ module HazardDetectionUnit(
   input         io_wbSrc_EX,
   input         io_branch_EX
 );
-  wire  _T_1 = io_rd_EX == io_instr[19:15]; // @[HazardDetectionUnit.scala 22:18]
-  wire  _T_3 = io_rd_EX == io_instr[24:20]; // @[HazardDetectionUnit.scala 22:51]
-  wire  _T_4 = _T_1 | _T_3; // @[HazardDetectionUnit.scala 22:39]
-  wire  _T_5 = _T_4 & io_wbSrc_EX; // @[HazardDetectionUnit.scala 22:73]
-  wire  _GEN_0 = _T_5 ? 1'h0 : 1'h1; // @[HazardDetectionUnit.scala 22:89]
-  assign io_pcEn = _T_5 ? 1'h0 : 1'h1; // @[HazardDetectionUnit.scala 17:11 HazardDetectionUnit.scala 23:13]
-  assign io_flushIF = io_branch_EX; // @[HazardDetectionUnit.scala 18:14 HazardDetectionUnit.scala 29:16]
-  assign io_flushID = io_branch_EX | _T_5; // @[HazardDetectionUnit.scala 19:14 HazardDetectionUnit.scala 24:16 HazardDetectionUnit.scala 30:16]
-  assign io_enableIF_ID = io_branch_EX ? 1'h0 : _GEN_0; // @[HazardDetectionUnit.scala 20:18 HazardDetectionUnit.scala 25:20 HazardDetectionUnit.scala 31:20]
+  wire [4:0] rs1 = io_instr[19:15]; // @[HazardDetectionUnit.scala 22:21]
+  wire [4:0] rs2 = io_instr[24:20]; // @[HazardDetectionUnit.scala 23:21]
+  wire  rs1IsAccessed = io_rd_EX == rs1; // @[HazardDetectionUnit.scala 24:32]
+  wire  rs2IsAccessed = io_rd_EX == rs2; // @[HazardDetectionUnit.scala 25:32]
+  wire  _T = rs1IsAccessed | rs2IsAccessed; // @[HazardDetectionUnit.scala 26:23]
+  wire  _T_1 = _T & io_wbSrc_EX; // @[HazardDetectionUnit.scala 26:41]
+  wire  _GEN_0 = _T_1 ? 1'h0 : 1'h1; // @[HazardDetectionUnit.scala 26:57]
+  assign io_pcEn = _T_1 ? 1'h0 : 1'h1; // @[HazardDetectionUnit.scala 17:11 HazardDetectionUnit.scala 27:13]
+  assign io_flushIF = io_branch_EX; // @[HazardDetectionUnit.scala 18:14 HazardDetectionUnit.scala 33:16]
+  assign io_flushID = io_branch_EX | _T_1; // @[HazardDetectionUnit.scala 19:14 HazardDetectionUnit.scala 28:16 HazardDetectionUnit.scala 34:16]
+  assign io_enableIF_ID = io_branch_EX ? 1'h0 : _GEN_0; // @[HazardDetectionUnit.scala 20:18 HazardDetectionUnit.scala 29:20 HazardDetectionUnit.scala 35:20]
 endmodule
 module RVCore(
   input         clock,
   input         reset,
   output [31:0] io_dataBus_addr,
-  input  [7:0]  io_dataBus_rdData_0,
-  input  [7:0]  io_dataBus_rdData_1,
-  input  [7:0]  io_dataBus_rdData_2,
-  input  [7:0]  io_dataBus_rdData_3,
-  output [7:0]  io_dataBus_wrData_0,
-  output [7:0]  io_dataBus_wrData_1,
-  output [7:0]  io_dataBus_wrData_2,
-  output [7:0]  io_dataBus_wrData_3,
+  input  [31:0] io_dataBus_rdData,
+  output [31:0] io_dataBus_wrData,
   output        io_dataBus_we_0,
   output        io_dataBus_we_1,
   output        io_dataBus_we_2,
@@ -2281,14 +2275,8 @@ module RVCore(
   wire  memStage_out_wb; // @[RVCore.scala 21:24]
   wire  memStage_out_wbSrc; // @[RVCore.scala 21:24]
   wire [31:0] memStage_dataBus_addr; // @[RVCore.scala 21:24]
-  wire [7:0] memStage_dataBus_rdData_0; // @[RVCore.scala 21:24]
-  wire [7:0] memStage_dataBus_rdData_1; // @[RVCore.scala 21:24]
-  wire [7:0] memStage_dataBus_rdData_2; // @[RVCore.scala 21:24]
-  wire [7:0] memStage_dataBus_rdData_3; // @[RVCore.scala 21:24]
-  wire [7:0] memStage_dataBus_wrData_0; // @[RVCore.scala 21:24]
-  wire [7:0] memStage_dataBus_wrData_1; // @[RVCore.scala 21:24]
-  wire [7:0] memStage_dataBus_wrData_2; // @[RVCore.scala 21:24]
-  wire [7:0] memStage_dataBus_wrData_3; // @[RVCore.scala 21:24]
+  wire [31:0] memStage_dataBus_rdData; // @[RVCore.scala 21:24]
+  wire [31:0] memStage_dataBus_wrData; // @[RVCore.scala 21:24]
   wire  memStage_dataBus_we_0; // @[RVCore.scala 21:24]
   wire  memStage_dataBus_we_1; // @[RVCore.scala 21:24]
   wire  memStage_dataBus_we_2; // @[RVCore.scala 21:24]
@@ -2355,6 +2343,7 @@ module RVCore(
   reg [4:0] mem_wb_rd; // @[RVCore.scala 35:23]
   reg  mem_wb_wb; // @[RVCore.scala 35:23]
   reg  mem_wb_wbSrc; // @[RVCore.scala 35:23]
+  wire  _T_12 = exStage_out_mem == 4'h0; // @[RVCore.scala 68:45]
   IF ifStage ( // @[RVCore.scala 18:23]
     .clock(ifStage_clock),
     .reset(ifStage_reset),
@@ -2440,14 +2429,8 @@ module RVCore(
     .out_wb(memStage_out_wb),
     .out_wbSrc(memStage_out_wbSrc),
     .dataBus_addr(memStage_dataBus_addr),
-    .dataBus_rdData_0(memStage_dataBus_rdData_0),
-    .dataBus_rdData_1(memStage_dataBus_rdData_1),
-    .dataBus_rdData_2(memStage_dataBus_rdData_2),
-    .dataBus_rdData_3(memStage_dataBus_rdData_3),
-    .dataBus_wrData_0(memStage_dataBus_wrData_0),
-    .dataBus_wrData_1(memStage_dataBus_wrData_1),
-    .dataBus_wrData_2(memStage_dataBus_wrData_2),
-    .dataBus_wrData_3(memStage_dataBus_wrData_3),
+    .dataBus_rdData(memStage_dataBus_rdData),
+    .dataBus_wrData(memStage_dataBus_wrData),
     .dataBus_we_0(memStage_dataBus_we_0),
     .dataBus_we_1(memStage_dataBus_we_1),
     .dataBus_we_2(memStage_dataBus_we_2),
@@ -2493,10 +2476,7 @@ module RVCore(
     .io_branch_EX(hazardDetectionUnit_io_branch_EX)
   );
   assign io_dataBus_addr = memStage_dataBus_addr; // @[RVCore.scala 80:14]
-  assign io_dataBus_wrData_0 = memStage_dataBus_wrData_0; // @[RVCore.scala 80:14]
-  assign io_dataBus_wrData_1 = memStage_dataBus_wrData_1; // @[RVCore.scala 80:14]
-  assign io_dataBus_wrData_2 = memStage_dataBus_wrData_2; // @[RVCore.scala 80:14]
-  assign io_dataBus_wrData_3 = memStage_dataBus_wrData_3; // @[RVCore.scala 80:14]
+  assign io_dataBus_wrData = memStage_dataBus_wrData; // @[RVCore.scala 80:14]
   assign io_dataBus_we_0 = memStage_dataBus_we_0; // @[RVCore.scala 80:14]
   assign io_dataBus_we_1 = memStage_dataBus_we_1; // @[RVCore.scala 80:14]
   assign io_dataBus_we_2 = memStage_dataBus_we_2; // @[RVCore.scala 80:14]
@@ -2537,16 +2517,13 @@ module RVCore(
   assign exStage_ctrl_fwdA_en = forwardingUnit_io_fwdA_en; // @[RVCore.scala 62:24]
   assign exStage_ctrl_fwdB_en = forwardingUnit_io_fwdB_en; // @[RVCore.scala 63:24]
   assign memStage_clock = clock;
-  assign memStage_in_aluRes = exStage_out_aluRes; // @[RVCore.scala 67:15 RVCore.scala 68:22]
+  assign memStage_in_aluRes = _T_12 ? $signed(32'sh0) : $signed(exStage_out_aluRes); // @[RVCore.scala 67:15 RVCore.scala 68:22]
   assign memStage_in_regOp2 = ex_mem_regOp2; // @[RVCore.scala 67:15]
   assign memStage_in_rd = ex_mem_rd; // @[RVCore.scala 67:15]
   assign memStage_in_wb = ex_mem_wb; // @[RVCore.scala 67:15]
   assign memStage_in_wbSrc = ex_mem_wbSrc; // @[RVCore.scala 67:15]
   assign memStage_in_mem = ex_mem_mem; // @[RVCore.scala 67:15]
-  assign memStage_dataBus_rdData_0 = io_dataBus_rdData_0; // @[RVCore.scala 80:14]
-  assign memStage_dataBus_rdData_1 = io_dataBus_rdData_1; // @[RVCore.scala 80:14]
-  assign memStage_dataBus_rdData_2 = io_dataBus_rdData_2; // @[RVCore.scala 80:14]
-  assign memStage_dataBus_rdData_3 = io_dataBus_rdData_3; // @[RVCore.scala 80:14]
+  assign memStage_dataBus_rdData = io_dataBus_rdData; // @[RVCore.scala 80:14]
   assign wbStage_in_memRes = mem_wb_memRes; // @[RVCore.scala 75:14]
   assign wbStage_in_aluRes = mem_wb_aluRes; // @[RVCore.scala 75:14]
   assign wbStage_in_rd = mem_wb_rd; // @[RVCore.scala 75:14]
@@ -3143,28 +3120,26 @@ module PS2(
   reg [31:0] _RAND_1;
   reg [31:0] _RAND_2;
 `endif // RANDOMIZE_REG_INIT
-  wire  buffer_clock; // @[PS2.scala 16:22]
-  wire  buffer_reset; // @[PS2.scala 16:22]
-  wire  buffer_io_enq_write; // @[PS2.scala 16:22]
-  wire  buffer_io_enq_full; // @[PS2.scala 16:22]
-  wire [7:0] buffer_io_enq_data; // @[PS2.scala 16:22]
-  wire  buffer_io_deq_read; // @[PS2.scala 16:22]
-  wire  buffer_io_deq_empty; // @[PS2.scala 16:22]
-  wire [7:0] buffer_io_deq_data; // @[PS2.scala 16:22]
-  reg [10:0] shiftReg; // @[PS2.scala 19:25]
-  reg [3:0] countReg; // @[PS2.scala 20:25]
-  wire  _T = countReg == 4'ha; // @[PS2.scala 22:17]
-  wire  _T_1 = _T & bus_clear; // @[PS2.scala 22:26]
-  wire [10:0] _T_3 = {ps2_data,shiftReg[10:1]}; // @[Cat.scala 29:58]
-  wire  _T_5 = ~buffer_io_deq_empty; // @[PS2.scala 29:16]
-  wire  _T_6 = ~ps2_clk; // @[PS2.scala 32:8]
-  reg  _T_7; // @[PS2.scala 32:27]
-  wire  _T_8 = _T_6 & _T_7; // @[PS2.scala 32:17]
-  wire [3:0] _T_10 = countReg + 4'h1; // @[PS2.scala 33:26]
-  wire  _T_13 = countReg == 4'h9; // @[PS2.scala 35:19]
-  wire  _T_14 = ~buffer_io_enq_full; // @[PS2.scala 37:12]
-  wire  _GEN_3 = _T_13 & _T_14; // @[PS2.scala 35:27]
-  RingBuffer buffer ( // @[PS2.scala 16:22]
+  wire  buffer_clock; // @[PS2.scala 18:22]
+  wire  buffer_reset; // @[PS2.scala 18:22]
+  wire  buffer_io_enq_write; // @[PS2.scala 18:22]
+  wire  buffer_io_enq_full; // @[PS2.scala 18:22]
+  wire [7:0] buffer_io_enq_data; // @[PS2.scala 18:22]
+  wire  buffer_io_deq_read; // @[PS2.scala 18:22]
+  wire  buffer_io_deq_empty; // @[PS2.scala 18:22]
+  wire [7:0] buffer_io_deq_data; // @[PS2.scala 18:22]
+  reg [10:0] shiftReg; // @[PS2.scala 21:25]
+  reg [3:0] countReg; // @[PS2.scala 22:25]
+  wire [10:0] _T_1 = {ps2_data,shiftReg[10:1]}; // @[Cat.scala 29:58]
+  wire  _T_3 = ~buffer_io_deq_empty; // @[PS2.scala 27:16]
+  wire  _T_4 = ~ps2_clk; // @[PS2.scala 30:8]
+  reg  _T_5; // @[PS2.scala 30:27]
+  wire  _T_6 = _T_4 & _T_5; // @[PS2.scala 30:17]
+  wire [3:0] _T_8 = countReg + 4'h1; // @[PS2.scala 31:26]
+  wire  _T_11 = countReg >= 4'ha; // @[PS2.scala 33:19]
+  wire  _T_12 = ~buffer_io_enq_full; // @[PS2.scala 35:12]
+  wire  _GEN_2 = _T_11 & _T_12; // @[PS2.scala 33:27]
+  RingBuffer buffer ( // @[PS2.scala 18:22]
     .clock(buffer_clock),
     .reset(buffer_reset),
     .io_enq_write(buffer_io_enq_write),
@@ -3174,13 +3149,13 @@ module PS2(
     .io_deq_empty(buffer_io_deq_empty),
     .io_deq_data(buffer_io_deq_data)
   );
-  assign bus_data = buffer_io_deq_data; // @[PS2.scala 28:12]
-  assign bus_flag = {{7'd0}, _T_5}; // @[PS2.scala 29:12]
+  assign bus_data = buffer_io_deq_data; // @[PS2.scala 26:12]
+  assign bus_flag = {{7'd0}, _T_3}; // @[PS2.scala 27:12]
   assign buffer_clock = clock;
   assign buffer_reset = reset;
-  assign buffer_io_enq_write = _T_8 & _GEN_3; // @[PS2.scala 17:23 PS2.scala 38:29]
-  assign buffer_io_enq_data = _T_3[8:1]; // @[PS2.scala 26:22]
-  assign buffer_io_deq_read = bus_clear; // @[PS2.scala 30:22]
+  assign buffer_io_enq_write = _T_6 & _GEN_2; // @[PS2.scala 19:23 PS2.scala 36:29]
+  assign buffer_io_enq_data = _T_1[8:1]; // @[PS2.scala 24:22]
+  assign buffer_io_deq_read = bus_clear; // @[PS2.scala 28:22]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -3221,7 +3196,7 @@ initial begin
   _RAND_1 = {1{`RANDOM}};
   countReg = _RAND_1[3:0];
   _RAND_2 = {1{`RANDOM}};
-  _T_7 = _RAND_2[0:0];
+  _T_5 = _RAND_2[0:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
@@ -3232,34 +3207,26 @@ end // initial
   always @(posedge clock) begin
     if (reset) begin
       shiftReg <= 11'h0;
-    end else if (_T_8) begin
-      shiftReg <= _T_3;
+    end else if (_T_6) begin
+      shiftReg <= _T_1;
     end
     if (reset) begin
       countReg <= 4'h0;
-    end else if (_T_8) begin
-      if (_T_13) begin
+    end else if (_T_6) begin
+      if (_T_11) begin
         countReg <= 4'h0;
       end else begin
-        countReg <= _T_10;
+        countReg <= _T_8;
       end
-    end else if (_T_1) begin
-      countReg <= 4'h0;
     end
-    _T_7 <= ps2_clk;
+    _T_5 <= ps2_clk;
   end
 endmodule
-module RAM(
+module memory.RAM(
   input         clock,
   input  [31:0] io_addr,
-  output [7:0]  io_rdData_0,
-  output [7:0]  io_rdData_1,
-  output [7:0]  io_rdData_2,
-  output [7:0]  io_rdData_3,
-  input  [7:0]  io_wrData_0,
-  input  [7:0]  io_wrData_1,
-  input  [7:0]  io_wrData_2,
-  input  [7:0]  io_wrData_3,
+  output [31:0] io_rdData,
+  input  [31:0] io_wrData,
   input         io_we_0,
   input         io_we_1,
   input         io_we_2,
@@ -3275,112 +3242,114 @@ module RAM(
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_4;
 `endif // RANDOMIZE_REG_INIT
-  reg [7:0] banks_0 [0:1023]; // @[RAM.scala 9:30]
-  wire [7:0] banks_0__T_9_data; // @[RAM.scala 9:30]
-  wire [9:0] banks_0__T_9_addr; // @[RAM.scala 9:30]
-  wire [7:0] banks_0__T_78_data; // @[RAM.scala 9:30]
-  wire [9:0] banks_0__T_78_addr; // @[RAM.scala 9:30]
-  wire  banks_0__T_78_mask; // @[RAM.scala 9:30]
-  wire  banks_0__T_78_en; // @[RAM.scala 9:30]
-  reg [7:0] banks_1 [0:1023]; // @[RAM.scala 9:30]
-  wire [7:0] banks_1__T_18_data; // @[RAM.scala 9:30]
-  wire [9:0] banks_1__T_18_addr; // @[RAM.scala 9:30]
-  wire [7:0] banks_1__T_87_data; // @[RAM.scala 9:30]
-  wire [9:0] banks_1__T_87_addr; // @[RAM.scala 9:30]
-  wire  banks_1__T_87_mask; // @[RAM.scala 9:30]
-  wire  banks_1__T_87_en; // @[RAM.scala 9:30]
-  reg [7:0] banks_2 [0:1023]; // @[RAM.scala 9:30]
-  wire [7:0] banks_2__T_27_data; // @[RAM.scala 9:30]
-  wire [9:0] banks_2__T_27_addr; // @[RAM.scala 9:30]
-  wire [7:0] banks_2__T_96_data; // @[RAM.scala 9:30]
-  wire [9:0] banks_2__T_96_addr; // @[RAM.scala 9:30]
-  wire  banks_2__T_96_mask; // @[RAM.scala 9:30]
-  wire  banks_2__T_96_en; // @[RAM.scala 9:30]
-  reg [7:0] banks_3 [0:1023]; // @[RAM.scala 9:30]
-  wire [7:0] banks_3__T_36_data; // @[RAM.scala 9:30]
-  wire [9:0] banks_3__T_36_addr; // @[RAM.scala 9:30]
-  wire [7:0] banks_3__T_105_data; // @[RAM.scala 9:30]
-  wire [9:0] banks_3__T_105_addr; // @[RAM.scala 9:30]
-  wire  banks_3__T_105_mask; // @[RAM.scala 9:30]
-  wire  banks_3__T_105_en; // @[RAM.scala 9:30]
-  reg [31:0] address; // @[RAM.scala 11:24]
-  wire [1:0] byteOffset = address[1:0]; // @[RAM.scala 14:24]
-  wire  _T_2 = byteOffset > 2'h0; // @[RAM.scala 16:78]
-  wire [29:0] _T_5 = address[31:2] + 30'h1; // @[RAM.scala 16:100]
-  wire [29:0] _T_7 = _T_2 ? _T_5 : address[31:2]; // @[RAM.scala 16:63]
-  wire  _T_11 = byteOffset > 2'h1; // @[RAM.scala 16:78]
-  wire [29:0] _T_16 = _T_11 ? _T_5 : address[31:2]; // @[RAM.scala 16:63]
-  wire  _T_20 = byteOffset > 2'h2; // @[RAM.scala 16:78]
-  wire [29:0] _T_25 = _T_20 ? _T_5 : address[31:2]; // @[RAM.scala 16:63]
-  wire [2:0] _T_37 = {{1'd0}, byteOffset}; // @[RAM.scala 17:64]
-  wire [1:0] _T_40 = byteOffset + 2'h1; // @[RAM.scala 17:64]
-  wire [1:0] _T_42 = byteOffset + 2'h2; // @[RAM.scala 17:64]
-  wire [1:0] _T_44 = byteOffset + 2'h3; // @[RAM.scala 17:64]
-  wire [7:0] rdPorts_0 = banks_0__T_9_data; // @[RAM.scala 16:24 RAM.scala 16:24]
-  wire [7:0] rdPorts_1 = banks_1__T_18_data; // @[RAM.scala 16:24 RAM.scala 16:24]
-  wire [7:0] _GEN_1 = 2'h1 == _T_37[1:0] ? rdPorts_1 : rdPorts_0; // @[RAM.scala 17:23]
-  wire [7:0] rdPorts_2 = banks_2__T_27_data; // @[RAM.scala 16:24 RAM.scala 16:24]
-  wire [7:0] _GEN_2 = 2'h2 == _T_37[1:0] ? rdPorts_2 : _GEN_1; // @[RAM.scala 17:23]
-  wire [7:0] rdPorts_3 = banks_3__T_36_data; // @[RAM.scala 16:24 RAM.scala 16:24]
-  wire [7:0] _GEN_5 = 2'h1 == _T_40 ? rdPorts_1 : rdPorts_0; // @[RAM.scala 17:23]
-  wire [7:0] _GEN_6 = 2'h2 == _T_40 ? rdPorts_2 : _GEN_5; // @[RAM.scala 17:23]
-  wire [7:0] _GEN_9 = 2'h1 == _T_42 ? rdPorts_1 : rdPorts_0; // @[RAM.scala 17:23]
-  wire [7:0] _GEN_10 = 2'h2 == _T_42 ? rdPorts_2 : _GEN_9; // @[RAM.scala 17:23]
-  wire [7:0] _GEN_13 = 2'h1 == _T_44 ? rdPorts_1 : rdPorts_0; // @[RAM.scala 17:23]
-  wire [7:0] _GEN_14 = 2'h2 == _T_44 ? rdPorts_2 : _GEN_13; // @[RAM.scala 17:23]
-  wire [31:0] wrData = {io_wrData_3,io_wrData_2,io_wrData_1,io_wrData_0}; // @[Cat.scala 29:58]
-  wire [7:0] wrDataInVec_3 = wrData[7:0]; // @[RAM.scala 28:68]
-  wire [7:0] wrDataInVec_2 = wrData[15:8]; // @[RAM.scala 28:68]
-  wire [7:0] wrDataInVec_1 = wrData[23:16]; // @[RAM.scala 28:68]
-  wire [7:0] wrDataInVec_0 = wrData[31:24]; // @[RAM.scala 28:68]
-  wire [7:0] _GEN_17 = 2'h1 == _T_44 ? wrDataInVec_1 : wrDataInVec_0; // @[RAM.scala 29:34]
-  wire [7:0] _GEN_18 = 2'h2 == _T_44 ? wrDataInVec_2 : _GEN_17; // @[RAM.scala 29:34]
-  wire [7:0] _GEN_21 = 2'h1 == _T_42 ? wrDataInVec_1 : wrDataInVec_0; // @[RAM.scala 29:34]
-  wire [7:0] _GEN_22 = 2'h2 == _T_42 ? wrDataInVec_2 : _GEN_21; // @[RAM.scala 29:34]
-  wire [7:0] _GEN_25 = 2'h1 == _T_40 ? wrDataInVec_1 : wrDataInVec_0; // @[RAM.scala 29:34]
-  wire [7:0] _GEN_26 = 2'h2 == _T_40 ? wrDataInVec_2 : _GEN_25; // @[RAM.scala 29:34]
-  wire [7:0] _GEN_29 = 2'h1 == _T_37[1:0] ? wrDataInVec_1 : wrDataInVec_0; // @[RAM.scala 29:34]
-  wire [7:0] _GEN_30 = 2'h2 == _T_37[1:0] ? wrDataInVec_2 : _GEN_29; // @[RAM.scala 29:34]
-  wire  _GEN_33 = 2'h1 == _T_37[1:0] ? io_we_1 : io_we_0; // @[RAM.scala 30:22]
-  wire  _GEN_34 = 2'h2 == _T_37[1:0] ? io_we_2 : _GEN_33; // @[RAM.scala 30:22]
-  wire  enVec_0 = 2'h3 == _T_37[1:0] ? io_we_3 : _GEN_34; // @[RAM.scala 30:22]
-  wire  _GEN_37 = 2'h1 == _T_40 ? io_we_1 : io_we_0; // @[RAM.scala 30:22]
-  wire  _GEN_38 = 2'h2 == _T_40 ? io_we_2 : _GEN_37; // @[RAM.scala 30:22]
-  wire  enVec_1 = 2'h3 == _T_40 ? io_we_3 : _GEN_38; // @[RAM.scala 30:22]
-  wire  _GEN_41 = 2'h1 == _T_42 ? io_we_1 : io_we_0; // @[RAM.scala 30:22]
-  wire  _GEN_42 = 2'h2 == _T_42 ? io_we_2 : _GEN_41; // @[RAM.scala 30:22]
-  wire  enVec_2 = 2'h3 == _T_42 ? io_we_3 : _GEN_42; // @[RAM.scala 30:22]
-  wire  _GEN_45 = 2'h1 == _T_44 ? io_we_1 : io_we_0; // @[RAM.scala 30:22]
-  wire  _GEN_46 = 2'h2 == _T_44 ? io_we_2 : _GEN_45; // @[RAM.scala 30:22]
-  wire  enVec_3 = 2'h3 == _T_44 ? io_we_3 : _GEN_46; // @[RAM.scala 30:22]
+  reg [7:0] banks_0 [0:1023]; // @[memory.RAM.scala 9:30]
+  wire [7:0] banks_0__T_9_data; // @[memory.RAM.scala 9:30]
+  wire [9:0] banks_0__T_9_addr; // @[memory.RAM.scala 9:30]
+  wire [7:0] banks_0__T_79_data; // @[memory.RAM.scala 9:30]
+  wire [9:0] banks_0__T_79_addr; // @[memory.RAM.scala 9:30]
+  wire  banks_0__T_79_mask; // @[memory.RAM.scala 9:30]
+  wire  banks_0__T_79_en; // @[memory.RAM.scala 9:30]
+  reg [7:0] banks_1 [0:1023]; // @[memory.RAM.scala 9:30]
+  wire [7:0] banks_1__T_18_data; // @[memory.RAM.scala 9:30]
+  wire [9:0] banks_1__T_18_addr; // @[memory.RAM.scala 9:30]
+  wire [7:0] banks_1__T_88_data; // @[memory.RAM.scala 9:30]
+  wire [9:0] banks_1__T_88_addr; // @[memory.RAM.scala 9:30]
+  wire  banks_1__T_88_mask; // @[memory.RAM.scala 9:30]
+  wire  banks_1__T_88_en; // @[memory.RAM.scala 9:30]
+  reg [7:0] banks_2 [0:1023]; // @[memory.RAM.scala 9:30]
+  wire [7:0] banks_2__T_27_data; // @[memory.RAM.scala 9:30]
+  wire [9:0] banks_2__T_27_addr; // @[memory.RAM.scala 9:30]
+  wire [7:0] banks_2__T_97_data; // @[memory.RAM.scala 9:30]
+  wire [9:0] banks_2__T_97_addr; // @[memory.RAM.scala 9:30]
+  wire  banks_2__T_97_mask; // @[memory.RAM.scala 9:30]
+  wire  banks_2__T_97_en; // @[memory.RAM.scala 9:30]
+  reg [7:0] banks_3 [0:1023]; // @[memory.RAM.scala 9:30]
+  wire [7:0] banks_3__T_36_data; // @[memory.RAM.scala 9:30]
+  wire [9:0] banks_3__T_36_addr; // @[memory.RAM.scala 9:30]
+  wire [7:0] banks_3__T_106_data; // @[memory.RAM.scala 9:30]
+  wire [9:0] banks_3__T_106_addr; // @[memory.RAM.scala 9:30]
+  wire  banks_3__T_106_mask; // @[memory.RAM.scala 9:30]
+  wire  banks_3__T_106_en; // @[memory.RAM.scala 9:30]
+  reg [31:0] address; // @[memory.RAM.scala 11:24]
+  wire [1:0] byteOffset = address[1:0]; // @[memory.RAM.scala 14:24]
+  wire  _T_2 = byteOffset > 2'h0; // @[memory.RAM.scala 16:78]
+  wire [29:0] _T_5 = address[31:2] + 30'h1; // @[memory.RAM.scala 16:100]
+  wire [29:0] _T_7 = _T_2 ? _T_5 : address[31:2]; // @[memory.RAM.scala 16:63]
+  wire  _T_11 = byteOffset > 2'h1; // @[memory.RAM.scala 16:78]
+  wire [29:0] _T_16 = _T_11 ? _T_5 : address[31:2]; // @[memory.RAM.scala 16:63]
+  wire  _T_20 = byteOffset > 2'h2; // @[memory.RAM.scala 16:78]
+  wire [29:0] _T_25 = _T_20 ? _T_5 : address[31:2]; // @[memory.RAM.scala 16:63]
+  wire [2:0] _T_37 = {{1'd0}, byteOffset}; // @[memory.RAM.scala 17:71]
+  wire [1:0] _T_40 = byteOffset + 2'h1; // @[memory.RAM.scala 17:71]
+  wire [1:0] _T_42 = byteOffset + 2'h2; // @[memory.RAM.scala 17:71]
+  wire [1:0] _T_44 = byteOffset + 2'h3; // @[memory.RAM.scala 17:71]
+  wire [7:0] rdPorts_0 = banks_0__T_9_data; // @[memory.RAM.scala 16:24 memory.RAM.scala 16:24]
+  wire [7:0] rdPorts_1 = banks_1__T_18_data; // @[memory.RAM.scala 16:24 memory.RAM.scala 16:24]
+  wire [7:0] _GEN_1 = 2'h1 == _T_37[1:0] ? rdPorts_1 : rdPorts_0; // @[memory.RAM.scala 17:30]
+  wire [7:0] rdPorts_2 = banks_2__T_27_data; // @[memory.RAM.scala 16:24 memory.RAM.scala 16:24]
+  wire [7:0] _GEN_2 = 2'h2 == _T_37[1:0] ? rdPorts_2 : _GEN_1; // @[memory.RAM.scala 17:30]
+  wire [7:0] rdPorts_3 = banks_3__T_36_data; // @[memory.RAM.scala 16:24 memory.RAM.scala 16:24]
+  wire [7:0] _GEN_3 = 2'h3 == _T_37[1:0] ? rdPorts_3 : _GEN_2; // @[memory.RAM.scala 17:30]
+  wire [7:0] _GEN_5 = 2'h1 == _T_40 ? rdPorts_1 : rdPorts_0; // @[memory.RAM.scala 17:30]
+  wire [7:0] _GEN_6 = 2'h2 == _T_40 ? rdPorts_2 : _GEN_5; // @[memory.RAM.scala 17:30]
+  wire [7:0] _GEN_7 = 2'h3 == _T_40 ? rdPorts_3 : _GEN_6; // @[memory.RAM.scala 17:30]
+  wire [7:0] _GEN_9 = 2'h1 == _T_42 ? rdPorts_1 : rdPorts_0; // @[memory.RAM.scala 17:30]
+  wire [7:0] _GEN_10 = 2'h2 == _T_42 ? rdPorts_2 : _GEN_9; // @[memory.RAM.scala 17:30]
+  wire [7:0] _GEN_11 = 2'h3 == _T_42 ? rdPorts_3 : _GEN_10; // @[memory.RAM.scala 17:30]
+  wire [7:0] _GEN_13 = 2'h1 == _T_44 ? rdPorts_1 : rdPorts_0; // @[memory.RAM.scala 17:30]
+  wire [7:0] _GEN_14 = 2'h2 == _T_44 ? rdPorts_2 : _GEN_13; // @[memory.RAM.scala 17:30]
+  wire [7:0] _GEN_15 = 2'h3 == _T_44 ? rdPorts_3 : _GEN_14; // @[memory.RAM.scala 17:30]
+  wire [15:0] _T_46 = {_GEN_7,_GEN_3}; // @[Cat.scala 29:58]
+  wire [15:0] _T_47 = {_GEN_15,_GEN_11}; // @[Cat.scala 29:58]
+  wire [7:0] wrDataInVec_3 = io_wrData[7:0]; // @[memory.RAM.scala 27:71]
+  wire [7:0] wrDataInVec_2 = io_wrData[15:8]; // @[memory.RAM.scala 27:71]
+  wire [7:0] wrDataInVec_1 = io_wrData[23:16]; // @[memory.RAM.scala 27:71]
+  wire [7:0] wrDataInVec_0 = io_wrData[31:24]; // @[memory.RAM.scala 27:71]
+  wire [7:0] _GEN_17 = 2'h1 == _T_44 ? wrDataInVec_1 : wrDataInVec_0; // @[memory.RAM.scala 28:34]
+  wire [7:0] _GEN_18 = 2'h2 == _T_44 ? wrDataInVec_2 : _GEN_17; // @[memory.RAM.scala 28:34]
+  wire [7:0] _GEN_21 = 2'h1 == _T_42 ? wrDataInVec_1 : wrDataInVec_0; // @[memory.RAM.scala 28:34]
+  wire [7:0] _GEN_22 = 2'h2 == _T_42 ? wrDataInVec_2 : _GEN_21; // @[memory.RAM.scala 28:34]
+  wire [7:0] _GEN_25 = 2'h1 == _T_40 ? wrDataInVec_1 : wrDataInVec_0; // @[memory.RAM.scala 28:34]
+  wire [7:0] _GEN_26 = 2'h2 == _T_40 ? wrDataInVec_2 : _GEN_25; // @[memory.RAM.scala 28:34]
+  wire [7:0] _GEN_29 = 2'h1 == _T_37[1:0] ? wrDataInVec_1 : wrDataInVec_0; // @[memory.RAM.scala 28:34]
+  wire [7:0] _GEN_30 = 2'h2 == _T_37[1:0] ? wrDataInVec_2 : _GEN_29; // @[memory.RAM.scala 28:34]
+  wire  _GEN_33 = 2'h1 == _T_37[1:0] ? io_we_1 : io_we_0; // @[memory.RAM.scala 29:22]
+  wire  _GEN_34 = 2'h2 == _T_37[1:0] ? io_we_2 : _GEN_33; // @[memory.RAM.scala 29:22]
+  wire  enVec_0 = 2'h3 == _T_37[1:0] ? io_we_3 : _GEN_34; // @[memory.RAM.scala 29:22]
+  wire  _GEN_37 = 2'h1 == _T_40 ? io_we_1 : io_we_0; // @[memory.RAM.scala 29:22]
+  wire  _GEN_38 = 2'h2 == _T_40 ? io_we_2 : _GEN_37; // @[memory.RAM.scala 29:22]
+  wire  enVec_1 = 2'h3 == _T_40 ? io_we_3 : _GEN_38; // @[memory.RAM.scala 29:22]
+  wire  _GEN_41 = 2'h1 == _T_42 ? io_we_1 : io_we_0; // @[memory.RAM.scala 29:22]
+  wire  _GEN_42 = 2'h2 == _T_42 ? io_we_2 : _GEN_41; // @[memory.RAM.scala 29:22]
+  wire  enVec_2 = 2'h3 == _T_42 ? io_we_3 : _GEN_42; // @[memory.RAM.scala 29:22]
+  wire  _GEN_45 = 2'h1 == _T_44 ? io_we_1 : io_we_0; // @[memory.RAM.scala 29:22]
+  wire  _GEN_46 = 2'h2 == _T_44 ? io_we_2 : _GEN_45; // @[memory.RAM.scala 29:22]
+  wire  enVec_3 = 2'h3 == _T_44 ? io_we_3 : _GEN_46; // @[memory.RAM.scala 29:22]
   assign banks_0__T_9_addr = _T_7[9:0];
-  assign banks_0__T_9_data = banks_0[banks_0__T_9_addr]; // @[RAM.scala 9:30]
-  assign banks_0__T_78_data = 2'h3 == _T_44 ? wrDataInVec_3 : _GEN_18;
-  assign banks_0__T_78_addr = _T_7[9:0];
-  assign banks_0__T_78_mask = 1'h1;
-  assign banks_0__T_78_en = io_w & enVec_0;
+  assign banks_0__T_9_data = banks_0[banks_0__T_9_addr]; // @[memory.RAM.scala 9:30]
+  assign banks_0__T_79_data = 2'h3 == _T_44 ? wrDataInVec_3 : _GEN_18;
+  assign banks_0__T_79_addr = _T_7[9:0];
+  assign banks_0__T_79_mask = 1'h1;
+  assign banks_0__T_79_en = io_w & enVec_0;
   assign banks_1__T_18_addr = _T_16[9:0];
-  assign banks_1__T_18_data = banks_1[banks_1__T_18_addr]; // @[RAM.scala 9:30]
-  assign banks_1__T_87_data = 2'h3 == _T_42 ? wrDataInVec_3 : _GEN_22;
-  assign banks_1__T_87_addr = _T_16[9:0];
-  assign banks_1__T_87_mask = 1'h1;
-  assign banks_1__T_87_en = io_w & enVec_1;
+  assign banks_1__T_18_data = banks_1[banks_1__T_18_addr]; // @[memory.RAM.scala 9:30]
+  assign banks_1__T_88_data = 2'h3 == _T_42 ? wrDataInVec_3 : _GEN_22;
+  assign banks_1__T_88_addr = _T_16[9:0];
+  assign banks_1__T_88_mask = 1'h1;
+  assign banks_1__T_88_en = io_w & enVec_1;
   assign banks_2__T_27_addr = _T_25[9:0];
-  assign banks_2__T_27_data = banks_2[banks_2__T_27_addr]; // @[RAM.scala 9:30]
-  assign banks_2__T_96_data = 2'h3 == _T_40 ? wrDataInVec_3 : _GEN_26;
-  assign banks_2__T_96_addr = _T_25[9:0];
-  assign banks_2__T_96_mask = 1'h1;
-  assign banks_2__T_96_en = io_w & enVec_2;
+  assign banks_2__T_27_data = banks_2[banks_2__T_27_addr]; // @[memory.RAM.scala 9:30]
+  assign banks_2__T_97_data = 2'h3 == _T_40 ? wrDataInVec_3 : _GEN_26;
+  assign banks_2__T_97_addr = _T_25[9:0];
+  assign banks_2__T_97_mask = 1'h1;
+  assign banks_2__T_97_en = io_w & enVec_2;
   assign banks_3__T_36_addr = address[11:2];
-  assign banks_3__T_36_data = banks_3[banks_3__T_36_addr]; // @[RAM.scala 9:30]
-  assign banks_3__T_105_data = 2'h3 == _T_37[1:0] ? wrDataInVec_3 : _GEN_30;
-  assign banks_3__T_105_addr = address[11:2];
-  assign banks_3__T_105_mask = 1'h1;
-  assign banks_3__T_105_en = io_w & enVec_3;
-  assign io_rdData_0 = 2'h3 == _T_37[1:0] ? rdPorts_3 : _GEN_2; // @[RAM.scala 17:13]
-  assign io_rdData_1 = 2'h3 == _T_40 ? rdPorts_3 : _GEN_6; // @[RAM.scala 17:13]
-  assign io_rdData_2 = 2'h3 == _T_42 ? rdPorts_3 : _GEN_10; // @[RAM.scala 17:13]
-  assign io_rdData_3 = 2'h3 == _T_44 ? rdPorts_3 : _GEN_14; // @[RAM.scala 17:13]
+  assign banks_3__T_36_data = banks_3[banks_3__T_36_addr]; // @[memory.RAM.scala 9:30]
+  assign banks_3__T_106_data = 2'h3 == _T_37[1:0] ? wrDataInVec_3 : _GEN_30;
+  assign banks_3__T_106_addr = address[11:2];
+  assign banks_3__T_106_mask = 1'h1;
+  assign banks_3__T_106_en = io_w & enVec_3;
+  assign io_rdData = {_T_47,_T_46}; // @[memory.RAM.scala 17:13]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -3440,22 +3409,22 @@ end // initial
 `endif
 `endif // SYNTHESIS
   always @(posedge clock) begin
-    if(banks_0__T_78_en & banks_0__T_78_mask) begin
-      banks_0[banks_0__T_78_addr] <= banks_0__T_78_data; // @[RAM.scala 9:30]
+    if(banks_0__T_79_en & banks_0__T_79_mask) begin
+      banks_0[banks_0__T_79_addr] <= banks_0__T_79_data; // @[memory.RAM.scala 9:30]
     end
-    if(banks_1__T_87_en & banks_1__T_87_mask) begin
-      banks_1[banks_1__T_87_addr] <= banks_1__T_87_data; // @[RAM.scala 9:30]
+    if(banks_1__T_88_en & banks_1__T_88_mask) begin
+      banks_1[banks_1__T_88_addr] <= banks_1__T_88_data; // @[memory.RAM.scala 9:30]
     end
-    if(banks_2__T_96_en & banks_2__T_96_mask) begin
-      banks_2[banks_2__T_96_addr] <= banks_2__T_96_data; // @[RAM.scala 9:30]
+    if(banks_2__T_97_en & banks_2__T_97_mask) begin
+      banks_2[banks_2__T_97_addr] <= banks_2__T_97_data; // @[memory.RAM.scala 9:30]
     end
-    if(banks_3__T_105_en & banks_3__T_105_mask) begin
-      banks_3[banks_3__T_105_addr] <= banks_3__T_105_data; // @[RAM.scala 9:30]
+    if(banks_3__T_106_en & banks_3__T_106_mask) begin
+      banks_3[banks_3__T_106_addr] <= banks_3__T_106_data; // @[memory.RAM.scala 9:30]
     end
     address <= io_addr;
   end
 endmodule
-module SevenSeg(
+module sevenseg.SevenSeg(
   input         clock,
   input         reset,
   input  [15:0] io_in,
@@ -3466,84 +3435,84 @@ module SevenSeg(
   reg [31:0] _RAND_0;
   reg [31:0] _RAND_1;
 `endif // RANDOMIZE_REG_INIT
-  reg [18:0] _T; // @[SevenSeg.scala 20:25]
-  wire  ticker = _T == 19'h7a120; // @[SevenSeg.scala 21:23]
-  wire [18:0] _T_2 = _T + 19'h1; // @[SevenSeg.scala 22:37]
-  reg [1:0] sevAnCounter; // @[SevenSeg.scala 13:25]
-  wire  _T_4 = sevAnCounter == 2'h3; // @[SevenSeg.scala 15:28]
-  wire [1:0] _T_6 = sevAnCounter + 2'h1; // @[SevenSeg.scala 15:51]
+  reg [18:0] _T; // @[sevenseg.SevenSeg.scala 20:25]
+  wire  ticker = _T == 19'h7a120; // @[sevenseg.SevenSeg.scala 21:23]
+  wire [18:0] _T_2 = _T + 19'h1; // @[sevenseg.SevenSeg.scala 22:37]
+  reg [1:0] sevAnCounter; // @[sevenseg.SevenSeg.scala 13:25]
+  wire  _T_4 = sevAnCounter == 2'h3; // @[sevenseg.SevenSeg.scala 15:28]
+  wire [1:0] _T_6 = sevAnCounter + 2'h1; // @[sevenseg.SevenSeg.scala 15:51]
   wire  _T_8 = 2'h0 == sevAnCounter; // @[Conditional.scala 37:30]
-  wire [6:0] _GEN_2 = 4'h1 == io_in[15:12] ? 7'h79 : 7'h40; // @[SevenSeg.scala 54:20]
-  wire [6:0] _GEN_3 = 4'h2 == io_in[15:12] ? 7'h24 : _GEN_2; // @[SevenSeg.scala 54:20]
-  wire [6:0] _GEN_4 = 4'h3 == io_in[15:12] ? 7'h30 : _GEN_3; // @[SevenSeg.scala 54:20]
-  wire [6:0] _GEN_5 = 4'h4 == io_in[15:12] ? 7'h19 : _GEN_4; // @[SevenSeg.scala 54:20]
-  wire [6:0] _GEN_6 = 4'h5 == io_in[15:12] ? 7'h12 : _GEN_5; // @[SevenSeg.scala 54:20]
-  wire [6:0] _GEN_7 = 4'h6 == io_in[15:12] ? 7'h2 : _GEN_6; // @[SevenSeg.scala 54:20]
-  wire [6:0] _GEN_8 = 4'h7 == io_in[15:12] ? 7'h78 : _GEN_7; // @[SevenSeg.scala 54:20]
-  wire [6:0] _GEN_9 = 4'h8 == io_in[15:12] ? 7'h0 : _GEN_8; // @[SevenSeg.scala 54:20]
-  wire [6:0] _GEN_10 = 4'h9 == io_in[15:12] ? 7'h10 : _GEN_9; // @[SevenSeg.scala 54:20]
-  wire [6:0] _GEN_11 = 4'ha == io_in[15:12] ? 7'h8 : _GEN_10; // @[SevenSeg.scala 54:20]
-  wire [6:0] _GEN_12 = 4'hb == io_in[15:12] ? 7'h3 : _GEN_11; // @[SevenSeg.scala 54:20]
-  wire [6:0] _GEN_13 = 4'hc == io_in[15:12] ? 7'h46 : _GEN_12; // @[SevenSeg.scala 54:20]
-  wire [6:0] _GEN_14 = 4'hd == io_in[15:12] ? 7'h21 : _GEN_13; // @[SevenSeg.scala 54:20]
-  wire [6:0] _GEN_15 = 4'he == io_in[15:12] ? 7'h6 : _GEN_14; // @[SevenSeg.scala 54:20]
-  wire [6:0] _GEN_16 = 4'hf == io_in[15:12] ? 7'he : _GEN_15; // @[SevenSeg.scala 54:20]
+  wire [6:0] _GEN_2 = 4'h1 == io_in[15:12] ? 7'h79 : 7'h40; // @[sevenseg.SevenSeg.scala 54:20]
+  wire [6:0] _GEN_3 = 4'h2 == io_in[15:12] ? 7'h24 : _GEN_2; // @[sevenseg.SevenSeg.scala 54:20]
+  wire [6:0] _GEN_4 = 4'h3 == io_in[15:12] ? 7'h30 : _GEN_3; // @[sevenseg.SevenSeg.scala 54:20]
+  wire [6:0] _GEN_5 = 4'h4 == io_in[15:12] ? 7'h19 : _GEN_4; // @[sevenseg.SevenSeg.scala 54:20]
+  wire [6:0] _GEN_6 = 4'h5 == io_in[15:12] ? 7'h12 : _GEN_5; // @[sevenseg.SevenSeg.scala 54:20]
+  wire [6:0] _GEN_7 = 4'h6 == io_in[15:12] ? 7'h2 : _GEN_6; // @[sevenseg.SevenSeg.scala 54:20]
+  wire [6:0] _GEN_8 = 4'h7 == io_in[15:12] ? 7'h78 : _GEN_7; // @[sevenseg.SevenSeg.scala 54:20]
+  wire [6:0] _GEN_9 = 4'h8 == io_in[15:12] ? 7'h0 : _GEN_8; // @[sevenseg.SevenSeg.scala 54:20]
+  wire [6:0] _GEN_10 = 4'h9 == io_in[15:12] ? 7'h10 : _GEN_9; // @[sevenseg.SevenSeg.scala 54:20]
+  wire [6:0] _GEN_11 = 4'ha == io_in[15:12] ? 7'h8 : _GEN_10; // @[sevenseg.SevenSeg.scala 54:20]
+  wire [6:0] _GEN_12 = 4'hb == io_in[15:12] ? 7'h3 : _GEN_11; // @[sevenseg.SevenSeg.scala 54:20]
+  wire [6:0] _GEN_13 = 4'hc == io_in[15:12] ? 7'h46 : _GEN_12; // @[sevenseg.SevenSeg.scala 54:20]
+  wire [6:0] _GEN_14 = 4'hd == io_in[15:12] ? 7'h21 : _GEN_13; // @[sevenseg.SevenSeg.scala 54:20]
+  wire [6:0] _GEN_15 = 4'he == io_in[15:12] ? 7'h6 : _GEN_14; // @[sevenseg.SevenSeg.scala 54:20]
+  wire [6:0] _GEN_16 = 4'hf == io_in[15:12] ? 7'he : _GEN_15; // @[sevenseg.SevenSeg.scala 54:20]
   wire  _T_10 = 2'h1 == sevAnCounter; // @[Conditional.scala 37:30]
-  wire [6:0] _GEN_18 = 4'h1 == io_in[11:8] ? 7'h79 : 7'h40; // @[SevenSeg.scala 58:20]
-  wire [6:0] _GEN_19 = 4'h2 == io_in[11:8] ? 7'h24 : _GEN_18; // @[SevenSeg.scala 58:20]
-  wire [6:0] _GEN_20 = 4'h3 == io_in[11:8] ? 7'h30 : _GEN_19; // @[SevenSeg.scala 58:20]
-  wire [6:0] _GEN_21 = 4'h4 == io_in[11:8] ? 7'h19 : _GEN_20; // @[SevenSeg.scala 58:20]
-  wire [6:0] _GEN_22 = 4'h5 == io_in[11:8] ? 7'h12 : _GEN_21; // @[SevenSeg.scala 58:20]
-  wire [6:0] _GEN_23 = 4'h6 == io_in[11:8] ? 7'h2 : _GEN_22; // @[SevenSeg.scala 58:20]
-  wire [6:0] _GEN_24 = 4'h7 == io_in[11:8] ? 7'h78 : _GEN_23; // @[SevenSeg.scala 58:20]
-  wire [6:0] _GEN_25 = 4'h8 == io_in[11:8] ? 7'h0 : _GEN_24; // @[SevenSeg.scala 58:20]
-  wire [6:0] _GEN_26 = 4'h9 == io_in[11:8] ? 7'h10 : _GEN_25; // @[SevenSeg.scala 58:20]
-  wire [6:0] _GEN_27 = 4'ha == io_in[11:8] ? 7'h8 : _GEN_26; // @[SevenSeg.scala 58:20]
-  wire [6:0] _GEN_28 = 4'hb == io_in[11:8] ? 7'h3 : _GEN_27; // @[SevenSeg.scala 58:20]
-  wire [6:0] _GEN_29 = 4'hc == io_in[11:8] ? 7'h46 : _GEN_28; // @[SevenSeg.scala 58:20]
-  wire [6:0] _GEN_30 = 4'hd == io_in[11:8] ? 7'h21 : _GEN_29; // @[SevenSeg.scala 58:20]
-  wire [6:0] _GEN_31 = 4'he == io_in[11:8] ? 7'h6 : _GEN_30; // @[SevenSeg.scala 58:20]
-  wire [6:0] _GEN_32 = 4'hf == io_in[11:8] ? 7'he : _GEN_31; // @[SevenSeg.scala 58:20]
+  wire [6:0] _GEN_18 = 4'h1 == io_in[11:8] ? 7'h79 : 7'h40; // @[sevenseg.SevenSeg.scala 58:20]
+  wire [6:0] _GEN_19 = 4'h2 == io_in[11:8] ? 7'h24 : _GEN_18; // @[sevenseg.SevenSeg.scala 58:20]
+  wire [6:0] _GEN_20 = 4'h3 == io_in[11:8] ? 7'h30 : _GEN_19; // @[sevenseg.SevenSeg.scala 58:20]
+  wire [6:0] _GEN_21 = 4'h4 == io_in[11:8] ? 7'h19 : _GEN_20; // @[sevenseg.SevenSeg.scala 58:20]
+  wire [6:0] _GEN_22 = 4'h5 == io_in[11:8] ? 7'h12 : _GEN_21; // @[sevenseg.SevenSeg.scala 58:20]
+  wire [6:0] _GEN_23 = 4'h6 == io_in[11:8] ? 7'h2 : _GEN_22; // @[sevenseg.SevenSeg.scala 58:20]
+  wire [6:0] _GEN_24 = 4'h7 == io_in[11:8] ? 7'h78 : _GEN_23; // @[sevenseg.SevenSeg.scala 58:20]
+  wire [6:0] _GEN_25 = 4'h8 == io_in[11:8] ? 7'h0 : _GEN_24; // @[sevenseg.SevenSeg.scala 58:20]
+  wire [6:0] _GEN_26 = 4'h9 == io_in[11:8] ? 7'h10 : _GEN_25; // @[sevenseg.SevenSeg.scala 58:20]
+  wire [6:0] _GEN_27 = 4'ha == io_in[11:8] ? 7'h8 : _GEN_26; // @[sevenseg.SevenSeg.scala 58:20]
+  wire [6:0] _GEN_28 = 4'hb == io_in[11:8] ? 7'h3 : _GEN_27; // @[sevenseg.SevenSeg.scala 58:20]
+  wire [6:0] _GEN_29 = 4'hc == io_in[11:8] ? 7'h46 : _GEN_28; // @[sevenseg.SevenSeg.scala 58:20]
+  wire [6:0] _GEN_30 = 4'hd == io_in[11:8] ? 7'h21 : _GEN_29; // @[sevenseg.SevenSeg.scala 58:20]
+  wire [6:0] _GEN_31 = 4'he == io_in[11:8] ? 7'h6 : _GEN_30; // @[sevenseg.SevenSeg.scala 58:20]
+  wire [6:0] _GEN_32 = 4'hf == io_in[11:8] ? 7'he : _GEN_31; // @[sevenseg.SevenSeg.scala 58:20]
   wire  _T_12 = 2'h2 == sevAnCounter; // @[Conditional.scala 37:30]
-  wire [6:0] _GEN_34 = 4'h1 == io_in[7:4] ? 7'h79 : 7'h40; // @[SevenSeg.scala 62:20]
-  wire [6:0] _GEN_35 = 4'h2 == io_in[7:4] ? 7'h24 : _GEN_34; // @[SevenSeg.scala 62:20]
-  wire [6:0] _GEN_36 = 4'h3 == io_in[7:4] ? 7'h30 : _GEN_35; // @[SevenSeg.scala 62:20]
-  wire [6:0] _GEN_37 = 4'h4 == io_in[7:4] ? 7'h19 : _GEN_36; // @[SevenSeg.scala 62:20]
-  wire [6:0] _GEN_38 = 4'h5 == io_in[7:4] ? 7'h12 : _GEN_37; // @[SevenSeg.scala 62:20]
-  wire [6:0] _GEN_39 = 4'h6 == io_in[7:4] ? 7'h2 : _GEN_38; // @[SevenSeg.scala 62:20]
-  wire [6:0] _GEN_40 = 4'h7 == io_in[7:4] ? 7'h78 : _GEN_39; // @[SevenSeg.scala 62:20]
-  wire [6:0] _GEN_41 = 4'h8 == io_in[7:4] ? 7'h0 : _GEN_40; // @[SevenSeg.scala 62:20]
-  wire [6:0] _GEN_42 = 4'h9 == io_in[7:4] ? 7'h10 : _GEN_41; // @[SevenSeg.scala 62:20]
-  wire [6:0] _GEN_43 = 4'ha == io_in[7:4] ? 7'h8 : _GEN_42; // @[SevenSeg.scala 62:20]
-  wire [6:0] _GEN_44 = 4'hb == io_in[7:4] ? 7'h3 : _GEN_43; // @[SevenSeg.scala 62:20]
-  wire [6:0] _GEN_45 = 4'hc == io_in[7:4] ? 7'h46 : _GEN_44; // @[SevenSeg.scala 62:20]
-  wire [6:0] _GEN_46 = 4'hd == io_in[7:4] ? 7'h21 : _GEN_45; // @[SevenSeg.scala 62:20]
-  wire [6:0] _GEN_47 = 4'he == io_in[7:4] ? 7'h6 : _GEN_46; // @[SevenSeg.scala 62:20]
-  wire [6:0] _GEN_48 = 4'hf == io_in[7:4] ? 7'he : _GEN_47; // @[SevenSeg.scala 62:20]
+  wire [6:0] _GEN_34 = 4'h1 == io_in[7:4] ? 7'h79 : 7'h40; // @[sevenseg.SevenSeg.scala 62:20]
+  wire [6:0] _GEN_35 = 4'h2 == io_in[7:4] ? 7'h24 : _GEN_34; // @[sevenseg.SevenSeg.scala 62:20]
+  wire [6:0] _GEN_36 = 4'h3 == io_in[7:4] ? 7'h30 : _GEN_35; // @[sevenseg.SevenSeg.scala 62:20]
+  wire [6:0] _GEN_37 = 4'h4 == io_in[7:4] ? 7'h19 : _GEN_36; // @[sevenseg.SevenSeg.scala 62:20]
+  wire [6:0] _GEN_38 = 4'h5 == io_in[7:4] ? 7'h12 : _GEN_37; // @[sevenseg.SevenSeg.scala 62:20]
+  wire [6:0] _GEN_39 = 4'h6 == io_in[7:4] ? 7'h2 : _GEN_38; // @[sevenseg.SevenSeg.scala 62:20]
+  wire [6:0] _GEN_40 = 4'h7 == io_in[7:4] ? 7'h78 : _GEN_39; // @[sevenseg.SevenSeg.scala 62:20]
+  wire [6:0] _GEN_41 = 4'h8 == io_in[7:4] ? 7'h0 : _GEN_40; // @[sevenseg.SevenSeg.scala 62:20]
+  wire [6:0] _GEN_42 = 4'h9 == io_in[7:4] ? 7'h10 : _GEN_41; // @[sevenseg.SevenSeg.scala 62:20]
+  wire [6:0] _GEN_43 = 4'ha == io_in[7:4] ? 7'h8 : _GEN_42; // @[sevenseg.SevenSeg.scala 62:20]
+  wire [6:0] _GEN_44 = 4'hb == io_in[7:4] ? 7'h3 : _GEN_43; // @[sevenseg.SevenSeg.scala 62:20]
+  wire [6:0] _GEN_45 = 4'hc == io_in[7:4] ? 7'h46 : _GEN_44; // @[sevenseg.SevenSeg.scala 62:20]
+  wire [6:0] _GEN_46 = 4'hd == io_in[7:4] ? 7'h21 : _GEN_45; // @[sevenseg.SevenSeg.scala 62:20]
+  wire [6:0] _GEN_47 = 4'he == io_in[7:4] ? 7'h6 : _GEN_46; // @[sevenseg.SevenSeg.scala 62:20]
+  wire [6:0] _GEN_48 = 4'hf == io_in[7:4] ? 7'he : _GEN_47; // @[sevenseg.SevenSeg.scala 62:20]
   wire  _T_14 = 2'h3 == sevAnCounter; // @[Conditional.scala 37:30]
-  wire [6:0] _GEN_50 = 4'h1 == io_in[3:0] ? 7'h79 : 7'h40; // @[SevenSeg.scala 66:20]
-  wire [6:0] _GEN_51 = 4'h2 == io_in[3:0] ? 7'h24 : _GEN_50; // @[SevenSeg.scala 66:20]
-  wire [6:0] _GEN_52 = 4'h3 == io_in[3:0] ? 7'h30 : _GEN_51; // @[SevenSeg.scala 66:20]
-  wire [6:0] _GEN_53 = 4'h4 == io_in[3:0] ? 7'h19 : _GEN_52; // @[SevenSeg.scala 66:20]
-  wire [6:0] _GEN_54 = 4'h5 == io_in[3:0] ? 7'h12 : _GEN_53; // @[SevenSeg.scala 66:20]
-  wire [6:0] _GEN_55 = 4'h6 == io_in[3:0] ? 7'h2 : _GEN_54; // @[SevenSeg.scala 66:20]
-  wire [6:0] _GEN_56 = 4'h7 == io_in[3:0] ? 7'h78 : _GEN_55; // @[SevenSeg.scala 66:20]
-  wire [6:0] _GEN_57 = 4'h8 == io_in[3:0] ? 7'h0 : _GEN_56; // @[SevenSeg.scala 66:20]
-  wire [6:0] _GEN_58 = 4'h9 == io_in[3:0] ? 7'h10 : _GEN_57; // @[SevenSeg.scala 66:20]
-  wire [6:0] _GEN_59 = 4'ha == io_in[3:0] ? 7'h8 : _GEN_58; // @[SevenSeg.scala 66:20]
-  wire [6:0] _GEN_60 = 4'hb == io_in[3:0] ? 7'h3 : _GEN_59; // @[SevenSeg.scala 66:20]
-  wire [6:0] _GEN_61 = 4'hc == io_in[3:0] ? 7'h46 : _GEN_60; // @[SevenSeg.scala 66:20]
-  wire [6:0] _GEN_62 = 4'hd == io_in[3:0] ? 7'h21 : _GEN_61; // @[SevenSeg.scala 66:20]
-  wire [6:0] _GEN_63 = 4'he == io_in[3:0] ? 7'h6 : _GEN_62; // @[SevenSeg.scala 66:20]
-  wire [6:0] _GEN_64 = 4'hf == io_in[3:0] ? 7'he : _GEN_63; // @[SevenSeg.scala 66:20]
+  wire [6:0] _GEN_50 = 4'h1 == io_in[3:0] ? 7'h79 : 7'h40; // @[sevenseg.SevenSeg.scala 66:20]
+  wire [6:0] _GEN_51 = 4'h2 == io_in[3:0] ? 7'h24 : _GEN_50; // @[sevenseg.SevenSeg.scala 66:20]
+  wire [6:0] _GEN_52 = 4'h3 == io_in[3:0] ? 7'h30 : _GEN_51; // @[sevenseg.SevenSeg.scala 66:20]
+  wire [6:0] _GEN_53 = 4'h4 == io_in[3:0] ? 7'h19 : _GEN_52; // @[sevenseg.SevenSeg.scala 66:20]
+  wire [6:0] _GEN_54 = 4'h5 == io_in[3:0] ? 7'h12 : _GEN_53; // @[sevenseg.SevenSeg.scala 66:20]
+  wire [6:0] _GEN_55 = 4'h6 == io_in[3:0] ? 7'h2 : _GEN_54; // @[sevenseg.SevenSeg.scala 66:20]
+  wire [6:0] _GEN_56 = 4'h7 == io_in[3:0] ? 7'h78 : _GEN_55; // @[sevenseg.SevenSeg.scala 66:20]
+  wire [6:0] _GEN_57 = 4'h8 == io_in[3:0] ? 7'h0 : _GEN_56; // @[sevenseg.SevenSeg.scala 66:20]
+  wire [6:0] _GEN_58 = 4'h9 == io_in[3:0] ? 7'h10 : _GEN_57; // @[sevenseg.SevenSeg.scala 66:20]
+  wire [6:0] _GEN_59 = 4'ha == io_in[3:0] ? 7'h8 : _GEN_58; // @[sevenseg.SevenSeg.scala 66:20]
+  wire [6:0] _GEN_60 = 4'hb == io_in[3:0] ? 7'h3 : _GEN_59; // @[sevenseg.SevenSeg.scala 66:20]
+  wire [6:0] _GEN_61 = 4'hc == io_in[3:0] ? 7'h46 : _GEN_60; // @[sevenseg.SevenSeg.scala 66:20]
+  wire [6:0] _GEN_62 = 4'hd == io_in[3:0] ? 7'h21 : _GEN_61; // @[sevenseg.SevenSeg.scala 66:20]
+  wire [6:0] _GEN_63 = 4'he == io_in[3:0] ? 7'h6 : _GEN_62; // @[sevenseg.SevenSeg.scala 66:20]
+  wire [6:0] _GEN_64 = 4'hf == io_in[3:0] ? 7'he : _GEN_63; // @[sevenseg.SevenSeg.scala 66:20]
   wire [6:0] _GEN_65 = _T_14 ? _GEN_64 : 7'h0; // @[Conditional.scala 39:67]
   wire [3:0] _GEN_66 = _T_14 ? 4'he : 4'h0; // @[Conditional.scala 39:67]
   wire [6:0] _GEN_67 = _T_12 ? _GEN_48 : _GEN_65; // @[Conditional.scala 39:67]
   wire [3:0] _GEN_68 = _T_12 ? 4'hd : _GEN_66; // @[Conditional.scala 39:67]
   wire [6:0] _GEN_69 = _T_10 ? _GEN_32 : _GEN_67; // @[Conditional.scala 39:67]
   wire [3:0] _GEN_70 = _T_10 ? 4'hb : _GEN_68; // @[Conditional.scala 39:67]
-  assign io_out_anode = _T_8 ? 4'h7 : _GEN_70; // @[SevenSeg.scala 27:16 SevenSeg.scala 55:20 SevenSeg.scala 59:20 SevenSeg.scala 63:20 SevenSeg.scala 67:20]
-  assign io_out_data = _T_8 ? _GEN_16 : _GEN_69; // @[SevenSeg.scala 26:15 SevenSeg.scala 54:20 SevenSeg.scala 58:20 SevenSeg.scala 62:20 SevenSeg.scala 66:20]
+  assign io_out_anode = _T_8 ? 4'h7 : _GEN_70; // @[sevenseg.SevenSeg.scala 27:16 sevenseg.SevenSeg.scala 55:20 sevenseg.SevenSeg.scala 59:20 sevenseg.SevenSeg.scala 63:20 sevenseg.SevenSeg.scala 67:20]
+  assign io_out_data = _T_8 ? _GEN_16 : _GEN_69; // @[sevenseg.SevenSeg.scala 26:15 sevenseg.SevenSeg.scala 54:20 sevenseg.SevenSeg.scala 58:20 sevenseg.SevenSeg.scala 62:20 sevenseg.SevenSeg.scala 66:20]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -3616,7 +3585,8 @@ module Top(
   output [3:0]  io_sev_anode,
   output [6:0]  io_sev_data,
   input         io_ps2_clk,
-  input         io_ps2_data
+  input         io_ps2_data,
+  input         io_btn
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
@@ -3624,81 +3594,65 @@ module Top(
   reg [31:0] _RAND_2;
   reg [31:0] _RAND_3;
   reg [31:0] _RAND_4;
+  reg [31:0] _RAND_5;
+  reg [31:0] _RAND_6;
 `endif // RANDOMIZE_REG_INIT
-  wire  mp_clock; // @[Top.scala 17:18]
-  wire  mp_reset; // @[Top.scala 17:18]
-  wire [31:0] mp_io_dataBus_addr; // @[Top.scala 17:18]
-  wire [7:0] mp_io_dataBus_rdData_0; // @[Top.scala 17:18]
-  wire [7:0] mp_io_dataBus_rdData_1; // @[Top.scala 17:18]
-  wire [7:0] mp_io_dataBus_rdData_2; // @[Top.scala 17:18]
-  wire [7:0] mp_io_dataBus_rdData_3; // @[Top.scala 17:18]
-  wire [7:0] mp_io_dataBus_wrData_0; // @[Top.scala 17:18]
-  wire [7:0] mp_io_dataBus_wrData_1; // @[Top.scala 17:18]
-  wire [7:0] mp_io_dataBus_wrData_2; // @[Top.scala 17:18]
-  wire [7:0] mp_io_dataBus_wrData_3; // @[Top.scala 17:18]
-  wire  mp_io_dataBus_we_0; // @[Top.scala 17:18]
-  wire  mp_io_dataBus_we_1; // @[Top.scala 17:18]
-  wire  mp_io_dataBus_we_2; // @[Top.scala 17:18]
-  wire  mp_io_dataBus_we_3; // @[Top.scala 17:18]
-  wire  mp_io_dataBus_w; // @[Top.scala 17:18]
-  wire  key_clock; // @[Top.scala 19:19]
-  wire  key_reset; // @[Top.scala 19:19]
-  wire  key_ps2_clk; // @[Top.scala 19:19]
-  wire  key_ps2_data; // @[Top.scala 19:19]
-  wire [7:0] key_bus_data; // @[Top.scala 19:19]
-  wire [7:0] key_bus_flag; // @[Top.scala 19:19]
-  wire  key_bus_clear; // @[Top.scala 19:19]
-  wire  ram_clock; // @[Top.scala 23:19]
-  wire [31:0] ram_io_addr; // @[Top.scala 23:19]
-  wire [7:0] ram_io_rdData_0; // @[Top.scala 23:19]
-  wire [7:0] ram_io_rdData_1; // @[Top.scala 23:19]
-  wire [7:0] ram_io_rdData_2; // @[Top.scala 23:19]
-  wire [7:0] ram_io_rdData_3; // @[Top.scala 23:19]
-  wire [7:0] ram_io_wrData_0; // @[Top.scala 23:19]
-  wire [7:0] ram_io_wrData_1; // @[Top.scala 23:19]
-  wire [7:0] ram_io_wrData_2; // @[Top.scala 23:19]
-  wire [7:0] ram_io_wrData_3; // @[Top.scala 23:19]
-  wire  ram_io_we_0; // @[Top.scala 23:19]
-  wire  ram_io_we_1; // @[Top.scala 23:19]
-  wire  ram_io_we_2; // @[Top.scala 23:19]
-  wire  ram_io_we_3; // @[Top.scala 23:19]
-  wire  ram_io_w; // @[Top.scala 23:19]
-  wire  sev_clock; // @[Top.scala 49:19]
-  wire  sev_reset; // @[Top.scala 49:19]
-  wire [15:0] sev_io_in; // @[Top.scala 49:19]
-  wire [3:0] sev_io_out_anode; // @[Top.scala 49:19]
-  wire [6:0] sev_io_out_data; // @[Top.scala 49:19]
-  reg  _T_2; // @[Top.scala 30:34]
-  wire  _T_3 = mp_io_dataBus_w & _T_2; // @[Top.scala 30:24]
-  reg  _T_5; // @[Top.scala 34:15]
-  wire [7:0] _GEN_4 = _T_5 ? key_bus_flag : ram_io_rdData_0; // @[Top.scala 34:49]
-  wire [7:0] _GEN_5 = _T_5 ? 8'h0 : ram_io_rdData_1; // @[Top.scala 34:49]
-  wire [7:0] _GEN_6 = _T_5 ? 8'h0 : ram_io_rdData_2; // @[Top.scala 34:49]
-  wire [7:0] _GEN_7 = _T_5 ? 8'h0 : ram_io_rdData_3; // @[Top.scala 34:49]
+  wire  mp_clock; // @[Top.scala 18:18]
+  wire  mp_reset; // @[Top.scala 18:18]
+  wire [31:0] mp_io_dataBus_addr; // @[Top.scala 18:18]
+  wire [31:0] mp_io_dataBus_rdData; // @[Top.scala 18:18]
+  wire [31:0] mp_io_dataBus_wrData; // @[Top.scala 18:18]
+  wire  mp_io_dataBus_we_0; // @[Top.scala 18:18]
+  wire  mp_io_dataBus_we_1; // @[Top.scala 18:18]
+  wire  mp_io_dataBus_we_2; // @[Top.scala 18:18]
+  wire  mp_io_dataBus_we_3; // @[Top.scala 18:18]
+  wire  mp_io_dataBus_w; // @[Top.scala 18:18]
+  wire  key_clock; // @[Top.scala 20:19]
+  wire  key_reset; // @[Top.scala 20:19]
+  wire  key_ps2_clk; // @[Top.scala 20:19]
+  wire  key_ps2_data; // @[Top.scala 20:19]
+  wire [7:0] key_bus_data; // @[Top.scala 20:19]
+  wire [7:0] key_bus_flag; // @[Top.scala 20:19]
+  wire  key_bus_clear; // @[Top.scala 20:19]
+  wire  ram_clock; // @[Top.scala 24:19]
+  wire [31:0] ram_io_addr; // @[Top.scala 24:19]
+  wire [31:0] ram_io_rdData; // @[Top.scala 24:19]
+  wire [31:0] ram_io_wrData; // @[Top.scala 24:19]
+  wire  ram_io_we_0; // @[Top.scala 24:19]
+  wire  ram_io_we_1; // @[Top.scala 24:19]
+  wire  ram_io_we_2; // @[Top.scala 24:19]
+  wire  ram_io_we_3; // @[Top.scala 24:19]
+  wire  ram_io_w; // @[Top.scala 24:19]
+  wire  sev_clock; // @[Top.scala 57:19]
+  wire  sev_reset; // @[Top.scala 57:19]
+  wire [15:0] sev_io_in; // @[Top.scala 57:19]
+  wire [3:0] sev_io_out_anode; // @[Top.scala 57:19]
+  wire [6:0] sev_io_out_data; // @[Top.scala 57:19]
+  reg  _T_2; // @[Top.scala 31:34]
+  wire  _T_3 = mp_io_dataBus_w & _T_2; // @[Top.scala 31:24]
+  reg  _T_5; // @[Top.scala 35:15]
+  wire [31:0] _GEN_4 = _T_5 ? {{24'd0}, key_bus_flag} : ram_io_rdData; // @[Top.scala 35:49]
   reg  _T_7; // @[Top.scala 38:15]
-  reg [15:0] blinkReg; // @[Top.scala 44:25]
-  reg  _T_9; // @[Top.scala 45:34]
-  wire  _T_10 = mp_io_dataBus_w & _T_9; // @[Top.scala 45:24]
-  wire [31:0] _T_13 = {mp_io_dataBus_wrData_3,mp_io_dataBus_wrData_2,mp_io_dataBus_wrData_1,mp_io_dataBus_wrData_0}; // @[Cat.scala 29:58]
-  RVCore mp ( // @[Top.scala 17:18]
+  wire [31:0] _GEN_5 = _T_7 ? {{24'd0}, key_bus_data} : _GEN_4; // @[Top.scala 38:49]
+  reg  btnReg; // @[Top.scala 43:23]
+  wire  _GEN_7 = io_btn | btnReg; // @[Top.scala 44:15]
+  reg  _T_9; // @[Top.scala 47:15]
+  reg [15:0] blinkReg; // @[Top.scala 52:25]
+  reg  _T_11; // @[Top.scala 53:34]
+  wire  _T_12 = mp_io_dataBus_w & _T_11; // @[Top.scala 53:24]
+  RVCore mp ( // @[Top.scala 18:18]
     .clock(mp_clock),
     .reset(mp_reset),
     .io_dataBus_addr(mp_io_dataBus_addr),
-    .io_dataBus_rdData_0(mp_io_dataBus_rdData_0),
-    .io_dataBus_rdData_1(mp_io_dataBus_rdData_1),
-    .io_dataBus_rdData_2(mp_io_dataBus_rdData_2),
-    .io_dataBus_rdData_3(mp_io_dataBus_rdData_3),
-    .io_dataBus_wrData_0(mp_io_dataBus_wrData_0),
-    .io_dataBus_wrData_1(mp_io_dataBus_wrData_1),
-    .io_dataBus_wrData_2(mp_io_dataBus_wrData_2),
-    .io_dataBus_wrData_3(mp_io_dataBus_wrData_3),
+    .io_dataBus_rdData(mp_io_dataBus_rdData),
+    .io_dataBus_wrData(mp_io_dataBus_wrData),
     .io_dataBus_we_0(mp_io_dataBus_we_0),
     .io_dataBus_we_1(mp_io_dataBus_we_1),
     .io_dataBus_we_2(mp_io_dataBus_we_2),
     .io_dataBus_we_3(mp_io_dataBus_we_3),
     .io_dataBus_w(mp_io_dataBus_w)
   );
-  PS2 key ( // @[Top.scala 19:19]
+  PS2 key ( // @[Top.scala 20:19]
     .clock(key_clock),
     .reset(key_reset),
     .ps2_clk(key_ps2_clk),
@@ -3707,58 +3661,46 @@ module Top(
     .bus_flag(key_bus_flag),
     .bus_clear(key_bus_clear)
   );
-  RAM ram ( // @[Top.scala 23:19]
+  memory.RAM ram ( // @[Top.scala 24:19]
     .clock(ram_clock),
     .io_addr(ram_io_addr),
-    .io_rdData_0(ram_io_rdData_0),
-    .io_rdData_1(ram_io_rdData_1),
-    .io_rdData_2(ram_io_rdData_2),
-    .io_rdData_3(ram_io_rdData_3),
-    .io_wrData_0(ram_io_wrData_0),
-    .io_wrData_1(ram_io_wrData_1),
-    .io_wrData_2(ram_io_wrData_2),
-    .io_wrData_3(ram_io_wrData_3),
+    .io_rdData(ram_io_rdData),
+    .io_wrData(ram_io_wrData),
     .io_we_0(ram_io_we_0),
     .io_we_1(ram_io_we_1),
     .io_we_2(ram_io_we_2),
     .io_we_3(ram_io_we_3),
     .io_w(ram_io_w)
   );
-  SevenSeg sev ( // @[Top.scala 49:19]
+  sevenseg.SevenSeg sev ( // @[Top.scala 57:19]
     .clock(sev_clock),
     .reset(sev_reset),
     .io_in(sev_io_in),
     .io_out_anode(sev_io_out_anode),
     .io_out_data(sev_io_out_data)
   );
-  assign io_blink = blinkReg; // @[Top.scala 48:12]
-  assign io_sev_anode = sev_io_out_anode; // @[Top.scala 50:14]
-  assign io_sev_data = sev_io_out_data; // @[Top.scala 50:14]
+  assign io_blink = blinkReg; // @[Top.scala 56:12]
+  assign io_sev_anode = sev_io_out_anode; // @[Top.scala 58:14]
+  assign io_sev_data = sev_io_out_data; // @[Top.scala 58:14]
   assign mp_clock = clock;
   assign mp_reset = reset;
-  assign mp_io_dataBus_rdData_0 = _T_7 ? key_bus_data : _GEN_4; // @[Top.scala 24:24 Top.scala 35:26 Top.scala 36:29 Top.scala 39:26 Top.scala 40:29]
-  assign mp_io_dataBus_rdData_1 = _T_7 ? 8'h0 : _GEN_5; // @[Top.scala 24:24 Top.scala 35:26 Top.scala 39:26]
-  assign mp_io_dataBus_rdData_2 = _T_7 ? 8'h0 : _GEN_6; // @[Top.scala 24:24 Top.scala 35:26 Top.scala 39:26]
-  assign mp_io_dataBus_rdData_3 = _T_7 ? 8'h0 : _GEN_7; // @[Top.scala 24:24 Top.scala 35:26 Top.scala 39:26]
+  assign mp_io_dataBus_rdData = _T_9 ? {{31'd0}, btnReg} : _GEN_5; // @[Top.scala 25:24 Top.scala 36:26 Top.scala 39:26 Top.scala 48:26]
   assign key_clock = clock;
   assign key_reset = reset;
-  assign key_ps2_clk = io_ps2_clk; // @[Top.scala 20:11]
-  assign key_ps2_data = io_ps2_data; // @[Top.scala 20:11]
-  assign key_bus_clear = _T_7; // @[Top.scala 21:17 Top.scala 41:19]
+  assign key_ps2_clk = io_ps2_clk; // @[Top.scala 21:11]
+  assign key_ps2_data = io_ps2_data; // @[Top.scala 21:11]
+  assign key_bus_clear = _T_7; // @[Top.scala 22:17 Top.scala 40:19]
   assign ram_clock = clock;
-  assign ram_io_addr = mp_io_dataBus_addr; // @[Top.scala 26:15]
-  assign ram_io_wrData_0 = mp_io_dataBus_wrData_0; // @[Top.scala 27:17]
-  assign ram_io_wrData_1 = mp_io_dataBus_wrData_1; // @[Top.scala 27:17]
-  assign ram_io_wrData_2 = mp_io_dataBus_wrData_2; // @[Top.scala 27:17]
-  assign ram_io_wrData_3 = mp_io_dataBus_wrData_3; // @[Top.scala 27:17]
-  assign ram_io_we_0 = _T_3 & mp_io_dataBus_we_0; // @[Top.scala 28:13 Top.scala 31:15]
-  assign ram_io_we_1 = _T_3 & mp_io_dataBus_we_1; // @[Top.scala 28:13 Top.scala 31:15]
-  assign ram_io_we_2 = _T_3 & mp_io_dataBus_we_2; // @[Top.scala 28:13 Top.scala 31:15]
-  assign ram_io_we_3 = _T_3 & mp_io_dataBus_we_3; // @[Top.scala 28:13 Top.scala 31:15]
-  assign ram_io_w = mp_io_dataBus_w; // @[Top.scala 29:12]
+  assign ram_io_addr = mp_io_dataBus_addr; // @[Top.scala 27:15]
+  assign ram_io_wrData = mp_io_dataBus_wrData; // @[Top.scala 28:17]
+  assign ram_io_we_0 = _T_3 & mp_io_dataBus_we_0; // @[Top.scala 29:13 Top.scala 32:15]
+  assign ram_io_we_1 = _T_3 & mp_io_dataBus_we_1; // @[Top.scala 29:13 Top.scala 32:15]
+  assign ram_io_we_2 = _T_3 & mp_io_dataBus_we_2; // @[Top.scala 29:13 Top.scala 32:15]
+  assign ram_io_we_3 = _T_3 & mp_io_dataBus_we_3; // @[Top.scala 29:13 Top.scala 32:15]
+  assign ram_io_w = mp_io_dataBus_w; // @[Top.scala 30:12]
   assign sev_clock = clock;
   assign sev_reset = reset;
-  assign sev_io_in = blinkReg; // @[Top.scala 51:13]
+  assign sev_io_in = blinkReg; // @[Top.scala 59:13]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -3801,9 +3743,13 @@ initial begin
   _RAND_2 = {1{`RANDOM}};
   _T_7 = _RAND_2[0:0];
   _RAND_3 = {1{`RANDOM}};
-  blinkReg = _RAND_3[15:0];
+  btnReg = _RAND_3[0:0];
   _RAND_4 = {1{`RANDOM}};
   _T_9 = _RAND_4[0:0];
+  _RAND_5 = {1{`RANDOM}};
+  blinkReg = _RAND_5[15:0];
+  _RAND_6 = {1{`RANDOM}};
+  _T_11 = _RAND_6[0:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
@@ -3816,10 +3762,18 @@ end // initial
     _T_5 <= mp_io_dataBus_addr == 32'h2100;
     _T_7 <= mp_io_dataBus_addr == 32'h2200;
     if (reset) begin
-      blinkReg <= 16'h0;
-    end else if (_T_10) begin
-      blinkReg <= _T_13[15:0];
+      btnReg <= 1'h0;
+    end else if (_T_9) begin
+      btnReg <= 1'h0;
+    end else begin
+      btnReg <= _GEN_7;
     end
-    _T_9 <= mp_io_dataBus_addr == 32'h2000;
+    _T_9 <= mp_io_dataBus_addr == 32'h2300;
+    if (reset) begin
+      blinkReg <= 16'h0;
+    end else if (_T_12) begin
+      blinkReg <= mp_io_dataBus_wrData[15:0];
+    end
+    _T_11 <= mp_io_dataBus_addr == 32'h2000;
   end
 endmodule

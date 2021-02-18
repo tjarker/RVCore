@@ -17,9 +17,9 @@ object Helper {
 }
 
 class DataBusIO extends Bundle {
-  val addr = Output(UInt(32.W))
-  val rdData = Input(Vec(4,UInt(8.W)))
-  val wrData = Output(Vec(4,UInt(8.W)))
-  val we = Output(Vec(4,Bool()))
-  val w = Output(Bool())
+  val addr = Input(UInt(32.W))
+  val rdData = Output(UInt(32.W))
+  val wrData = Input(UInt(32.W))
+  val we = Input(Vec(4,Bool()))
+  val w = Input(Bool())
 }

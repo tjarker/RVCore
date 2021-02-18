@@ -9,7 +9,7 @@ OUTPUT_ARCH(riscv)
 MEMORY
 {
   /* rvcore */
-  RAM (rwx)  : ORIGIN = 0x00, LENGTH = 4K
+  memory.RAM (rwx)  : ORIGIN = 0x00, LENGTH = 4K
 }
 ENTRY(_start)
 SEARCH_DIR("/tools/riscv32/riscv32-unknown-elf/lib");
@@ -17,7 +17,7 @@ SECTIONS
 {
   /* Read-only sections, merged into text segment: */
   PROVIDE (__executable_start = SEGMENT_START("text-segment", 0x00)); . = SEGMENT_START("text-segment", 0x00) + SIZEOF_HEADERS;
-  PROVIDE (__stack_top = ORIGIN(RAM) + LENGTH(RAM));
+  PROVIDE (__stack_top = ORIGIN(memory.RAM) + LENGTH(memory.RAM));
   .interp         : { *(.interp) }
   .note.gnu.build-id  : { *(.note.gnu.build-id) }
   .hash           : { *(.hash) }

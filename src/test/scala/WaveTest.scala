@@ -6,13 +6,13 @@ import rvcore.lib.{BinaryLoader, Program}
 
 
 class WaveTester(dut: Top) extends PeekPokeTester(dut) {
-  step(4000)
+  step(10000)
 }
 
 class WaveTest extends FlatSpec with Matchers {
 
   s"Top with waveforms" should "pass" in {
-    chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () => new Top(BinaryLoader.loadProgram("output/key/key.bin"))) {
+    chisel3.iotesters.Driver.execute(Array("--generate-vcd-output", "on"), () => new Top(BinaryLoader.loadProgram("output/memtest/memtest.bin"))) {
       c => new WaveTester(c) } should be(true)
   }
 }

@@ -1,5 +1,5 @@
 -- Listing 13.1
--- ROM with synchonous read (inferring Block RAM)
+-- ROM with synchonous read (inferring Block memory.RAM)
 -- character ROM
 --   - 8-by-16 (8-by-2^4) font
 --   - 128 (2^7) characters
@@ -2203,7 +2203,7 @@ architecture arch of font_rom is
    "00000000"  -- f
    );
 begin
-   -- addr register to infer block RAM
+   -- addr register to infer block memory.RAM
    process (clk)
    begin
       if (clk'event and clk = '1') then

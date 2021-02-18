@@ -1,4 +1,4 @@
-package charvga.submodules
+package peripherals.charvga.submodules
 
 import chisel3._
 

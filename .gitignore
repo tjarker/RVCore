@@ -5,4 +5,13 @@
 /.bsp
 *.fir
 *.anno.json
-/vivado
+/.idea/
+/hardware/.bsp/
+/hardware/.idea/
+/hardware/project/
+/hardware/synthesis/rvbasys3.cache/
+/hardware/synthesis/rvbasys3.hw/
+/hardware/synthesis/rvbasys3.ip_user_files/
+/hardware/synthesis/rvbasys3.sim/
+/hardware/target/
+/output/

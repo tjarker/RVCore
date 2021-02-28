@@ -31,6 +31,10 @@ else
 	@echo "Define the C file you want to build with `f=fileName.s`"
 endif
 
+test:
+	cd hardware
+	sbt test
+
 getFunctionAddr:
 ifdef func
 ifdef f 

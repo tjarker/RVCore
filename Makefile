@@ -32,8 +32,7 @@ else
 endif
 
 test:
-	cd hardware
-	sbt test
+	cd hardware; sbt test
 
 getFunctionAddr:
 ifdef func

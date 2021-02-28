@@ -1,9 +1,9 @@
 import chisel3.iotesters.PeekPokeTester
 import org.scalatest.{FlatSpec, Matchers}
-import rvcore.lib.{BinaryLoader, Program}
 import rvcore.pipeline.RVPipline
+import util.BinaryLoader
 
-
+/*
 
 class WaveTester(dut: Top) extends PeekPokeTester(dut) {
   step(1000)
@@ -16,3 +16,4 @@ class WaveTest extends FlatSpec with Matchers {
       c => new WaveTester(c) } should be(true)
   }
 }
+*/

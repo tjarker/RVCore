@@ -81,7 +81,7 @@ class EX extends MultiIOModule {
     sysBusMaster.addr := alu.io.output.asUInt()
     when(in.mem(3)){
       sysBusMaster.cmd := SysBusCmd.WRITE
-      sysBusMaster.wrData := in.regOp2.asUInt()
+      sysBusMaster.wrData := fwdRegOp2.asUInt()
       switch(in.mem(1,0)) {
         is("b01".U) {
           sysBusMaster.strb := VecInit(1.B,0.B,0.B,0.B)

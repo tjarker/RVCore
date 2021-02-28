@@ -1,4 +1,4 @@
-package rvcore.lib
+package rvcore.pipeline.lib
 
 import chisel3.util.Enum
 

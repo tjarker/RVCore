@@ -1,14 +1,14 @@
+import util._
 import chisel3._
-import chisel3.util._
 import peripherals.keyboard.Keyboard
 import peripherals.keyboard.lib.PS2Port
 import peripherals.ledvec.{LedVec, LedVecIO}
 import peripherals.sevenseg.{SevenSeg, SevenSegIO}
 import peripherals.sevenseg.SevenSeg
-import rvcore.lib.{BinaryLoader, Program}
 import rvcore.memory.RAM
 import rvcore.pipeline.RVPipline
 import rvcore.systembus.{ReadValueArbiter, SystemBus}
+
 
 class Top(program: Program) extends Module{
   val io = IO(new Bundle{

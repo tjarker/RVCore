@@ -1,8 +1,7 @@
 package rvcore.memory
 
 import chisel3._
-import rvcore.lib.DataBusIO
-import rvcore.lib.Helper.toUInt
+import rvcore.lib.Helper.byteVecToUInt
 import rvcore.systembus.{MemoryMappedModule, SystemBus}
 
 class RAM(baseAddr: Int, size: Int) extends MemoryMappedModule {
@@ -22,7 +21,7 @@ class RAM(baseAddr: Int, size: Int) extends MemoryMappedModule {
   byteOffset := address(1, 0)
 
   val rdPorts = VecInit(Seq.tabulate(4)(i => banks(i).read(Mux(address(1, 0) > i.U, address(31, 2) + 1.U, address(31, 2)))))
-  sysBus.sendRq.rdData := toUInt(VecInit(Seq.tabulate(4)(i => rdPorts(byteOffset + i.U))))
+  sysBus.sendRq.rdData := byteVecToUInt(VecInit(Seq.tabulate(4)(i => rdPorts(byteOffset + i.U))))
 
   val wrDataInVec = WireDefault(VecInit(Seq.tabulate(4)(i => sysBus.wrData((i * 8) + 7, i * 8).asUInt).reverse)) //TODO: find a way without using reverse :D
   val wrVec = WireDefault(VecInit(Seq.tabulate(4)(i => wrDataInVec(byteOffset + i.U)).reverse))

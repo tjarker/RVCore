@@ -1,4 +1,4 @@
-package rvcore.lib
+package util
 
 import java.io.{File, FileOutputStream, IOException}
 import java.nio.file.{Files, Paths}
@@ -30,7 +30,7 @@ object BinaryLoader {
       val source = io.Source.fromFile(path)
       return try source.getLines().map(_.toInt).toArray finally source.close()
     } catch {
-      case _: Throwable => println("No result file found")
+      case _: Throwable => {}//println("No result file found")
     }
     Array.fill(32)(0)
   }

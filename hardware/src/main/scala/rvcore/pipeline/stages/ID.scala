@@ -1,7 +1,7 @@
 package rvcore.pipeline.stages
 
 import rvcore.pipeline.lib.Interfaces._
-import rvcore.lib.ALUOps._
+import rvcore.pipeline.lib.ALUOps._
 import rvcore.lib.OpcodesRV32I._
 import chisel3._
 import chisel3.util._
@@ -20,7 +20,7 @@ class ID(sim: Boolean = false) extends MultiIOModule {
 
 
   val regFile = Module(new RegFile(sim))
-  if(sim) ctrl.regFilePort.get := regFile.io.regFilePort
+  if(sim) ctrl.regFilePort.get := regFile.io.regFilePort.get
   val immGen = Module(new ImmGen)
 
   val opcode = in.instr(6, 0)

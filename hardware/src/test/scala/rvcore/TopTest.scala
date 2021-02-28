@@ -1,7 +1,6 @@
 package rvcore
 
-import rvcore.lib.{BinaryLoader, Program}
-import rvcore.simulation.RVPipedSimWrapper
+
 import chiseltest._
 import org.scalatest.FreeSpec
 import chisel3._

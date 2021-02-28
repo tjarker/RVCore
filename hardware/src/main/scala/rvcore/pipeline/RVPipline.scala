@@ -1,7 +1,6 @@
 package rvcore.pipeline
 
 import chisel3._
-import rvcore.lib.DataBusIO
 import rvcore.pipeline.lib.Interfaces._
 import rvcore.pipeline.lib.DebugPort
 import rvcore.pipeline.stages.{EX, ID, IF, MEM, WB}
@@ -23,8 +22,8 @@ class RVPipline(branchPredictionScheme : String = "", sim: Boolean = false) exte
   val wbStage = Module(new WB)
 
   if(sim){
-    io.debugPort.get.regfile := idStage.ctrl.regFilePort.get
-    io.debugPort.get.instr := ifStage.ctrl.instr
+    io.debugPort.get.regfile := idStage.ctrl.regFilePort.get.map(_.asUInt)
+    io.debugPort.get.instr := ifStage.ctrl.instr.asUInt()
     io.debugPort.get.pc := ifStage.out.pc
   }
 

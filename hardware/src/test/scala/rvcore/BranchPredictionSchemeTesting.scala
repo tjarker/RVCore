@@ -1,12 +1,12 @@
 package rvcore
 
-import rvcore.lib.BinaryLoader
+
 import rvcore._
 import chiseltest._
 import org.scalatest._
-import rvcore.pipeline.RVPipline
-import rvcore.simulation.RVPipedSimWrapper
-
+import rvcore.pipeline.{PipelineSimWrapper, RVPipline}
+import util.BinaryLoader
+/*
 class BranchPredictionSchemeTesting extends FreeSpec with ChiselScalatestTester{
 
   val predictionSchemes = List("Always", "Never", "Loop", "Index1", "Index2")
@@ -17,8 +17,7 @@ class BranchPredictionSchemeTesting extends FreeSpec with ChiselScalatestTester{
   s"${program.name} should pass co-simulation" in {
     for(predictionScheme <- predictionSchemes){
       test(new RVPipline(predictionScheme)){ c =>
-        val wrapper = new RVPipedSimWrapper(c, program, false
-        )
+        val wrapper = new PipelineSimWrapper(c, program, 0x10000)
         cycles(i) = wrapper.run()
         i += 1
       }
@@ -27,3 +26,4 @@ class BranchPredictionSchemeTesting extends FreeSpec with ChiselScalatestTester{
     println(s"${"=" * 16 + "=" * 20 * cycles.length}\n\nScheme:${"\t" * 3}${predictionSchemes.mkString(s"${"\t" * 2}-${"\t" * 2}")}\nCycles:${"\t" * 3}${cycles.mkString(s"${"\t" * 2}-${"\t" * 2}")}\nPerformance\t\t${cycles.map((x : Int) => "%.2f%c".format(100 * cycles.max/x.toDouble,'%')).mkString(s"${"\t" * 2}-${"\t" * 2}")}\nBest:${"\t" * 3}${predictionSchemes(cycles.indexOf(cycles.min))}\nWorst:${"\t" * 3}${predictionSchemes(cycles.indexOf(cycles.max))}\n\n${"=" * 16 + "=" * 20 * cycles.length}")
   }
 }
+*/

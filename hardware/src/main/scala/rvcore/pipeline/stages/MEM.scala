@@ -3,7 +3,6 @@ package rvcore.pipeline.stages
 import rvcore.pipeline.lib.Interfaces._
 import chisel3._
 import chisel3.util._
-import rvcore.lib.DataBusIO
 import rvcore.lib.Helper._
 import rvcore.systembus.{SlaveChannel, SysBusCmd, SysBusMasterIO}
 
@@ -19,7 +18,7 @@ class MEM extends MultiIOModule {
 
   val rdData = WireDefault(VecInit(Seq.fill(4)(0.U(8.W))))
   when(in.mem =/= 0.U && !in.mem(3)){
-    rdData := toByteVec(sysBusSlave.rdData)
+    rdData := DatatoByteVec(sysBusSlave.rdData)
   }
 
   out.memRes := 0.S

@@ -3,7 +3,7 @@
 <!--                                                         -->
 <!-- Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.   -->
 
-<Project Version="7" Minor="54" Path="/home/tjarker/GitHub/RVCore/hardware/synthesis/rvbasys3.xpr">
+<Project Version="7" Minor="54" Path="/home/tjarker/GitHub/rvcore.RVCore/hardware/synthesis/rvbasys3.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="04c17b7bf65d4949acbadb9e3026d10f"/>

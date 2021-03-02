@@ -2,35 +2,33 @@ package rvcore.memory
 
 import chisel3._
 import rvcore.lib.Helper.byteVecToUInt
-import rvcore.systembus.{MemoryMappedModule, SystemBus}
+import rvcore.systembus.{CoreModule, SysBusCmd, SysBusResp}
 
-class RAM(baseAddr: Int, size: Int) extends MemoryMappedModule {
+class RAM(refName: String, baseAddr: Int, size: Int) extends CoreModule(refName, baseAddr, size) {
 
-  val banks = Seq.fill(4)(Mem(size / 4, UInt(8.W)))
+  val banks = Seq.fill(4)(SyncReadMem(size / 4, UInt(8.W)))
 
-  val address = RegNext(sysBus.addr)
-  val internalWrite = WireDefault(0.B)
-
-  sysBus.sendRq.rq := 0.B
-  when(address >= baseAddr.U && address < (baseAddr+size).U ){
-    sysBus.sendRq.rq := 1.B
-    internalWrite := sysBus.w
-  }
+  val addr = sysBusIO.m.addr
 
   val byteOffset = Wire(UInt(2.W))
-  byteOffset := address(1, 0)
+  byteOffset := addr(1, 0)
 
-  val rdPorts = VecInit(Seq.tabulate(4)(i => banks(i).read(Mux(address(1, 0) > i.U, address(31, 2) + 1.U, address(31, 2)))))
-  sysBus.sendRq.rdData := byteVecToUInt(VecInit(Seq.tabulate(4)(i => rdPorts(byteOffset + i.U))))
+  val rdPorts = VecInit(Seq.tabulate(4)(i => banks(i).read(Mux(addr(1, 0) > i.U, addr(31, 2) + 1.U, addr(31, 2)))))
+  sysBusIO.s.rdData := 0.U
+  sysBusIO.s.resp := SysBusResp.NULL
+  when(RegNext(sysBusIO.m.cmd === SysBusCmd.READ)){
+    sysBusIO.s.resp := SysBusResp.SENT
+    sysBusIO.s.rdData := byteVecToUInt(VecInit(Seq.tabulate(4)(i => rdPorts(byteOffset + i.U))))
+  }
 
-  val wrDataInVec = WireDefault(VecInit(Seq.tabulate(4)(i => sysBus.wrData((i * 8) + 7, i * 8).asUInt).reverse)) //TODO: find a way without using reverse :D
+  val wrDataInVec = WireDefault(VecInit(Seq.tabulate(4)(i => sysBusIO.m.wrData((i * 8) + 7, i * 8).asUInt).reverse)) //TODO: find a way without using reverse :D
   val wrVec = WireDefault(VecInit(Seq.tabulate(4)(i => wrDataInVec(byteOffset + i.U)).reverse))
-  val enVec = VecInit(Seq.tabulate(4)(i => sysBus.we(byteOffset + i.U)))
+  val enVec = VecInit(Seq.tabulate(4)(i => sysBusIO.m.strb(byteOffset + i.U)))
 
   val addressVec = Wire(Vec(4,UInt(30.W)))
-  addressVec := VecInit(Seq.tabulate(4)(i => Mux(address(1, 0) > i.U, address(31, 2) + 1.U, address(31, 2))))
+  addressVec := VecInit(Seq.tabulate(4)(i => Mux(addr(1, 0) > i.U, addr(31, 2) + 1.U, addr(31, 2))))
 
-  when(internalWrite) {
+  when(sysBusIO.m.cmd === SysBusCmd.WRITE) {
     for(i <- 0 until 4){
       when(enVec(i)) {
         banks(i).write(addressVec(i), wrVec(i))
@@ -40,12 +38,8 @@ class RAM(baseAddr: Int, size: Int) extends MemoryMappedModule {
 }
 
 object RAM {
-  def apply(sysBus: SystemBus, baseAddr: Int, size: Int) : RAM = {
-    val ram = Module(new RAM(baseAddr,size))
-    ram.sysBus.addr := sysBus.addr
-    ram.sysBus.wrData := sysBus.wrData
-    ram.sysBus.we := sysBus.we
-    ram.sysBus.w := sysBus.w
+  def apply(refName: String, baseAddr: Int, size: Int) : RAM = {
+    val ram = Module(new RAM(refName, baseAddr, size))
     ram
   }
 }

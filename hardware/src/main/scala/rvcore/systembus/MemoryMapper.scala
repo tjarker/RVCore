@@ -1,21 +1,28 @@
 package rvcore.systembus
 
+import util.BinaryLoader
 import chisel3._
+import rvcore.RVCore
+/*
+object Implicits {
+  implicit class GetCoreModuleAccessors(c: AnyRef) {
+    def getAccessorMap: Seq[CoreModule] = {
+      val fields = (Map[String, Any]() /: c.getClass.getDeclaredFields) { (a, f) =>
+        f.setAccessible(true)
+        a + (f.getName -> f.get(c))
+      }
 
-object SysBusController {
-  def apply(sysBus: SysBus, coreModules: Seq[CoreModule]) : SysBusController = {
-    val c = Module(new SysBusController(coreModules))
-
-    c
+      fields.filter(p => p._2.isInstanceOf[CoreModule]).map(_._2.asInstanceOf[CoreModule]).toSeq
+    }
   }
-}
+}*/
 
-class SysBusController(coreModules: Seq[CoreModule]) extends MultiIOModule{
-  val sysBus = new SysBusSlaveIO
-  val selectors = IO(Output(Vec(coreModules.length, Bool())))
+object MemoryMapper {
+  def apply(core: RVCore) : Unit = {
 
-  coreModules.zip(selectors).foreach{case (cm, sel) =>
-    sel := 0.B
+    //import Implicits._
+    val am = core.getAccessorMap
+    println(am)
+
   }
-
 }

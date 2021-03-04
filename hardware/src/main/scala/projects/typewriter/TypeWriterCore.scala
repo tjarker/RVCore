@@ -2,7 +2,8 @@ package projects.typewriter
 
 import rvcore.BareCore
 import rvcore.memory.{RAM, ROM}
-import util.BinaryLoader
+import util.{BinaryLoader, CoreGenerator}
+import chisel3._
 
 class TypeWriterCore extends BareCore{
 
@@ -12,10 +13,9 @@ class TypeWriterCore extends BareCore{
   val ram = RAM("RAM0",0x1000,4096)
 
 
-  connectCoreModules()
-  generateHeader()
+
 }
 
 object TypeWriterCore extends App {
-  chisel3.Driver.execute(Array("--target-dir","../output/blink2"),() => new TypeWriterCore)
+  Module((new TypeWriterCore)).generateHeader()
 }

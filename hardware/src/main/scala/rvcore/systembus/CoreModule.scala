@@ -35,21 +35,22 @@ abstract class IOModule(refName: String, baseAddr: Int, size: Int) extends CoreM
 
   val regs : Seq[Data]
 
-  private def getRegisters: Seq[VisibleReg] = {
+  /*private def getRegisters: Seq[VisibleReg] = {
     val fields = (Map[String, Any]() /: this.getClass.getDeclaredFields) { (a, f) =>
       f.setAccessible(true)
       a + (f.getName -> f.get(this))
     }
 
     fields.filter(p => p._2.isInstanceOf[VisibleReg]).map(_._2.asInstanceOf[VisibleReg]).toSeq
-  }
+  }*/
 
   override def toStruct: String = {
-    val name = dev.refName // -> given at instantiation
+    val sb = new StringBuilder
+    val name = this.refName // -> given at instantiation
     val typeName = "UART"
     val fields = Seq("status","config","data")
     val descr = Seq("The status register","The config register","The data register")
-    val baseAddr = dev.baseAddr
+    val baseAddr = this.baseAddr
 
     sb.append("typedef struct {\n")
     val l1 = fields.maxBy(_.length).length+1
@@ -60,5 +61,6 @@ abstract class IOModule(refName: String, baseAddr: Int, size: Int) extends CoreM
     }
     sb.append(s"} ${typeName}_t;\n")
     sb.append(s"volatile ${typeName}_t* const $name = (${typeName}_t*)0x%08X\n\n".format(baseAddr))
+    sb.toString()
   }
 }

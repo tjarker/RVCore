@@ -2,9 +2,9 @@ package rvcore.memory
 
 import chisel3._
 import rvcore.lib.Helper.byteVecToUInt
-import rvcore.systembus.{CoreModule, SysBusCmd, SysBusResp}
+import rvcore.systembus.{CoreModule, MemoryModule, SysBusCmd, SysBusResp}
 
-class RAM(refName: String, baseAddr: Int, size: Int) extends CoreModule(refName, baseAddr, size) {
+class RAM(refName: String, baseAddr: Int, size: Int) extends MemoryModule(refName, baseAddr, size) {
 
   val banks = Seq.fill(4)(SyncReadMem(size / 4, UInt(8.W)))
 

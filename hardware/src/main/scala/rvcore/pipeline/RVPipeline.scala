@@ -7,7 +7,7 @@ import rvcore.pipeline.stages.{EX, ID, IF, MEM, WB}
 import rvcore.pipeline.submodules.{ForwardingUnit, HazardDetectionUnit}
 import rvcore.systembus.{InstrBus, SysBusMasterIO}
 
-class RVPipline(branchPredictionScheme : String = "", sim: Boolean = false) extends Module {
+class RVPipeline(branchPredictionScheme : String = "", sim: Boolean = false) extends Module {
   val io = IO(new Bundle{
     val debugPort = if(sim) Some(Output(new DebugPort)) else None
     val sysBusIO = new SysBusMasterIO
@@ -88,7 +88,7 @@ class RVPipline(branchPredictionScheme : String = "", sim: Boolean = false) exte
 
 }
 
-object RVPipline extends App {
-  (new chisel3.stage.ChiselStage).emitVerilog(new RVPipline())
+object RVPipeline extends App {
+  (new chisel3.stage.ChiselStage).emitVerilog(new RVPipeline())
 }
 

@@ -4,7 +4,7 @@ package rvcore
 import rvcore._
 import chiseltest._
 import org.scalatest._
-import rvcore.pipeline.{PipelineSimWrapper, RVPipline}
+import rvcore.pipeline.{PipelineSimWrapper, RVPipeline}
 import util.BinaryLoader
 /*
 class BranchPredictionSchemeTesting extends FreeSpec with ChiselScalatestTester{

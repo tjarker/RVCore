@@ -6,7 +6,7 @@ import rvcore.systembus.SysBusCmd
 import util.{BinaryDumper, Program, SimMemory}
 import chisel3._
 
-class PipelineSimWrapper(dut: RVPipline, program: Program, memorySize: Int){
+class PipelineSimWrapper(dut: RVPipeline, program: Program, memorySize: Int){
 
   val mem = new SimMemory(memorySize, program.wordBinaries)
   //mem.printMem(program.wordBinaries.length)

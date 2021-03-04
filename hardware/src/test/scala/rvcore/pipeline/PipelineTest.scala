@@ -29,7 +29,7 @@ class AllPrograms extends FreeSpec with ChiselScalatestTester{
         emulated = wrapper.regFileToSeq
       }
 
-      test(new RVPipline(sim = true)) { c =>
+      test(new RVPipeline(sim = true)) { c =>
         val wrapper = new PipelineSimWrapper(c, program, memorySize)
         wrapper.run()
         for (i <- 0 until 32) {

@@ -3,7 +3,7 @@ package rvcore.memory
 import chisel3.util.Cat
 import util.Program
 import chisel3._
-import rvcore.systembus.{CoreModule, CoreObject, InstrBus, SysBusCmd, SysBusResp}
+import rvcore.systembus.{CoreModule, CoreObject, InstrBus, MemoryModule, SysBusCmd, SysBusResp}
 
 object ROM extends CoreObject {
   def apply(refName: String, baseAddr: Int, program: Program) : ROM = {
@@ -12,7 +12,7 @@ object ROM extends CoreObject {
   }
 }
 
-class ROM(refName: String, program: Array[Int], baseAddr: Int) extends CoreModule(refName, baseAddr, program.length){
+class ROM(refName: String, program: Array[Int], baseAddr: Int) extends MemoryModule(refName, baseAddr, program.length){
   val instrBus = IO(Flipped(new InstrBus))
 
   sysBusIO.s.resp := SysBusResp.SENT

@@ -7,13 +7,13 @@ import peripherals.keyboard.lib.PS2Port
 import peripherals.ledvec.{LedVec, LedVecIO}
 import peripherals.sevenseg.{SevenSeg, SevenSegIO}
 import rvcore.memory.{RAM, ROM}
-import rvcore.pipeline.RVPipline
+import rvcore.pipeline.RVPipeline
 import rvcore.systembus.{CoreModule, MemoryMapper, SysBus, SystemBus}
 
 import scala.collection.mutable.ListBuffer
 
 
-class RVCore(program: Program) extends Module{
+class RVCoreImpl(program: Program) extends Module{
   val io = IO(new Bundle{
     val led = Output(new LedVecIO)
   })
@@ -23,7 +23,7 @@ class RVCore(program: Program) extends Module{
   val sysBus = Wire(new SysBus)
 
   // processor
-  val p = Module(new RVPipline)
+  val p = Module(new RVPipeline)
   p.io.sysBusIO <> sysBus
 
   //System bus mapped devices///////////////////////////////////////////////////////////////////////////////////////////
@@ -63,13 +63,13 @@ class RVCore(program: Program) extends Module{
   }
 }
 
-object RVCore extends App {
+object RVCoreImpl extends App {
   if(args.length == 0) {
     val program = BinaryLoader.loadProgram("../output/blink2/blink2.bin")
-    chisel3.Driver.execute(Array("--target-dir","../output/blink2"),() => new RVCore(program))
+    chisel3.Driver.execute(Array("--target-dir","../output/blink2"),() => new RVCoreImpl(program))
   }else{
     val program = BinaryLoader.loadProgram(args(0))
     val name = args(0).split("/").last.dropRight(4)
-    chisel3.Driver.execute(Array(args(1),args(2),"--top-name",s"Top_${name}"), () => new RVCore(program))
+    chisel3.Driver.execute(Array(args(1),args(2),"--top-name",s"Top_${name}"), () => new RVCoreImpl(program))
   }
 }

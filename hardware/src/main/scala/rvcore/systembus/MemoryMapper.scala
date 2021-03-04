@@ -2,7 +2,7 @@ package rvcore.systembus
 
 import util.BinaryLoader
 import chisel3._
-import rvcore.RVCore
+import rvcore.RVCoreImpl
 /*
 object Implicits {
   implicit class GetCoreModuleAccessors(c: AnyRef) {
@@ -18,7 +18,7 @@ object Implicits {
 }*/
 
 object MemoryMapper {
-  def apply(core: RVCore) : Unit = {
+  def apply(core: RVCoreImpl) : Unit = {
 
     //import Implicits._
     val am = core.getAccessorMap

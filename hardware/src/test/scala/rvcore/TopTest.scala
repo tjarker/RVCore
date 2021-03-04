@@ -4,7 +4,7 @@ package rvcore
 import chiseltest._
 import org.scalatest.FreeSpec
 import chisel3._
-import rvcore.pipeline.RVPipline
+import rvcore.pipeline.RVPipeline
 /*
 private object tester {
   def testProgram(dut: RVPipline, program: Program) : Unit = {

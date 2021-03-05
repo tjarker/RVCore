@@ -19,7 +19,7 @@ class SysBus extends Bundle {
   val m = new MasterChannel
   val s = new SlaveChannel
 
-  def connect(modules: Seq[CoreModule]): Unit = {
+  def connect(modules: Seq[BusModule]): Unit = {
     this.s.holdLow()
     modules.zipWithIndex.foreach{case (cm, i) =>
       cm.sysBusIO.m.holdLow()

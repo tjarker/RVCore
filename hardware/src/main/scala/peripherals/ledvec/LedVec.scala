@@ -1,25 +1,39 @@
 package peripherals.ledvec
 
 import chisel3._
-import rvcore.systembus.{MemoryMappedModule, SystemBus}
+import rvcore.systembus.RegField._
+import rvcore.systembus.{Accessor, BusModule, MemoryMappedModule, RegBusModule, RegField, SystemBus}
 
-class LedVec(baseAddr: Int) extends MemoryMappedModule{
+
+
+
+class LedVec(refName: String, baseAddr: Int) extends RegBusModule("led_t",refName,baseAddr,1){
+
+  class ConfigType extends Bundle {
+    val active = Bool()
+  }
+
   val led = IO(Output(new LedVecIO))
 
   val data = RegInit(0x00.U(16.W))
-  val isRead = dontTouch(Wire(Bool()))
-  isRead := sysBus.mapReg(data,baseAddr)
+  val config = RegInit(0.U.asTypeOf(new ConfigType))
+  val isRead = Wire(Bool())
 
-  led.led := data
-}
+  when(config.active) {
+    led.led := data
+  }.otherwise{
+    led.led := 0.U
+  }
 
-object LedVec {
-  def apply(sysBus: SystemBus, baseAddr: Int) : LedVec = {
-    val ledVec = Module(new LedVec(baseAddr))
-    ledVec.sysBus.addr := sysBus.addr
-    ledVec.sysBus.wrData := sysBus.wrData
-    ledVec.sysBus.we := sysBus.we
-    ledVec.sysBus.w := sysBus.w
-    ledVec
+  val accessors = regMap(
+    0x00 -> RegField(data, "data", "data register"),
+    0x01 -> RegField(config, "config", "Configuration Register")
+  )
+
+  when(accessors(0).isWritten){
+    led.led := data | (1<<15).U
   }
 }
+
+
+

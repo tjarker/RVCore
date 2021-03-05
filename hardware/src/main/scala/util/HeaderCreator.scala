@@ -1,44 +1,30 @@
 package util
 
-import rvcore.systembus.{CoreModule, MemoryModule}
+import rvcore.systembus.{BusModule, MemoryBusModule, RegBusModule}
 
 import java.io.PrintWriter
 
-class HeaderCreator(devs: Seq[MemoryModule]) {
+class HeaderCreator(mem: Seq[MemoryBusModule], mod: Seq[RegBusModule]) {
 
   val sb = new StringBuilder
 
-  for(dev <- devs){
+  sb.append(s"//Memory${"/"*80}\n\n")
+  for(dev <- mem){
     println(dev.toStruct)
     sb.append(dev.toStruct)
   }
-
-  /*
-  val name = dev.refName // -> given at instantiation
-    val typeName = "UART"
-    val fields = Seq("status","config","data")
-    val descr = Seq("The status register","The config register","The data register")
-    val baseAddr = dev.baseAddr
-
-    sb.append("typedef struct {\n")
-    val l1 = fields.maxBy(_.length).length+1
-    val l2 = descr.maxBy(_.length).length
-    fields.zip(descr).zipWithIndex.foreach{ case ((s,d),i) =>
-      val string = s"  int %${l1}s  // 0x%08X: %-${l2}s\n"
-      sb.append(string.format(s+";",baseAddr+4*i,d))
-    }
-    sb.append(s"} ${typeName}_t;\n")
-    sb.append(s"volatile ${typeName}_t* const $name = (${typeName}_t*)0x%08X\n\n".format(baseAddr))
-   */
-
-
+  sb.append(s"//Devices${"/"*79}\n\n")
+  for(dev <- mod){
+    println(dev.toStruct)
+    sb.append(dev.toStruct)
+  }
 
   new PrintWriter("Header2.h") { write(sb.toString()); close }
 
 }
 
 object HeaderCreator {
-  def apply(devs: Seq[MemoryModule]) : Unit = {
-    new HeaderCreator(devs)
+  def apply(mem: Seq[MemoryBusModule], mod: Seq[RegBusModule]) : Unit = {
+    new HeaderCreator(mem,mod)
   }
 }

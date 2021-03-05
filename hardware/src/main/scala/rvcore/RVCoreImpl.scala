@@ -8,7 +8,7 @@ import peripherals.ledvec.{LedVec, LedVecIO}
 import peripherals.sevenseg.{SevenSeg, SevenSegIO}
 import rvcore.memory.{RAM, ROM}
 import rvcore.pipeline.RVPipeline
-import rvcore.systembus.{CoreModule, MemoryMapper, SysBus, SystemBus}
+import rvcore.systembus.{BusModule, MemoryMapper, SysBus, SystemBus}
 
 import scala.collection.mutable.ListBuffer
 
@@ -17,7 +17,7 @@ class RVCoreImpl(program: Program) extends Module{
   val io = IO(new Bundle{
     val led = Output(new LedVecIO)
   })
-  val coreDevs: ListBuffer[CoreModule] = ListBuffer()
+  val coreDevs: ListBuffer[BusModule] = ListBuffer()
 
   // the system bus
   val sysBus = Wire(new SysBus)
@@ -53,13 +53,13 @@ class RVCoreImpl(program: Program) extends Module{
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  def getAccessorMap: Seq[CoreModule] = {
+  def getAccessorMap: Seq[BusModule] = {
     val fields = (Map[String, Any]() /: this.getClass.getDeclaredFields) { (a, f) =>
       f.setAccessible(true)
       a + (f.getName -> f.get(this))
     }
 
-    fields.filter(p => p._2.isInstanceOf[CoreModule]).map(_._2.asInstanceOf[CoreModule]).toSeq
+    fields.filter(p => p._2.isInstanceOf[BusModule]).map(_._2.asInstanceOf[BusModule]).toSeq
   }
 }
 

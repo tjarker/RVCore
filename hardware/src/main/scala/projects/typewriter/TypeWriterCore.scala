@@ -1,9 +1,10 @@
 package projects.typewriter
 
-import rvcore.BareCore
+import rvcore.{BareCore, CoreConstructor}
 import rvcore.memory.{RAM, ROM}
 import util.{BinaryLoader, CoreGenerator}
 import chisel3._
+import peripherals.ledvec.LedVec
 
 class TypeWriterCore extends BareCore{
 
@@ -12,10 +13,9 @@ class TypeWriterCore extends BareCore{
 
   val ram = RAM("RAM0",0x1000,4096)
 
-
+  val led = Module(new LedVec("led",0x2000))
 
 }
 
-object TypeWriterCore extends App {
-  Module((new TypeWriterCore)).generateHeader()
-}
+object TypeWriterCore extends CoreConstructor(() => new TypeWriterCore)
+

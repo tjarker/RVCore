@@ -1,7 +1,7 @@
 package util
 
 import rvcore.BareCore
-import rvcore.systembus.CoreModule
+import rvcore.systembus.BusModule
 
 object CoreGenerator {
   def apply(core: BareCore) : BareCore = {

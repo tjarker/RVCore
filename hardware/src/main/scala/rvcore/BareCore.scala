@@ -2,7 +2,7 @@ package rvcore
 import util.HeaderCreator
 import chisel3._
 import rvcore.pipeline.RVPipeline
-import rvcore.systembus.{CoreModule, MemoryModule, SysBus}
+import rvcore.systembus.{BusModule, MemoryBusModule, RegBusModule, SysBus}
 
 
 abstract class BareCore extends MultiIOModule{
@@ -11,28 +11,35 @@ abstract class BareCore extends MultiIOModule{
   val sysBus = Wire(new SysBus)
   sysBus <> pipeline.io.sysBusIO
 
-  private def getCoreModules: Seq[CoreModule] = {
+  private def getBusModules: Seq[BusModule] = {
     val fields = (Map[String, Any]() /: this.getClass.getDeclaredFields) { (a, f) =>
       f.setAccessible(true)
       a + (f.getName -> f.get(this))
     }
 
-    fields.filter(p => p._2.isInstanceOf[CoreModule]).map(_._2.asInstanceOf[CoreModule]).toSeq
+    fields.filter(p => p._2.isInstanceOf[BusModule]).map(_._2.asInstanceOf[BusModule]).toSeq
   }
-  private def getMemoryModules: Seq[MemoryModule] = {
+  private def getMemoryBusModules: Seq[MemoryBusModule] = {
     val fields = (Map[String, Any]() /: this.getClass.getDeclaredFields) { (a, f) =>
       f.setAccessible(true)
       a + (f.getName -> f.get(this))
     }
 
-    fields.filter(p => p._2.isInstanceOf[MemoryModule]).map(_._2.asInstanceOf[MemoryModule]).toSeq
+    fields.filter(p => p._2.isInstanceOf[MemoryBusModule]).map(_._2.asInstanceOf[MemoryBusModule]).toSeq
+  }
+  private def getRegBusModules: Seq[RegBusModule] = {
+    val fields = (Map[String, Any]() /: this.getClass.getDeclaredFields) { (a, f) =>
+      f.setAccessible(true)
+      a + (f.getName -> f.get(this))
+    }
+
+    fields.filter(p => p._2.isInstanceOf[RegBusModule]).map(_._2.asInstanceOf[RegBusModule]).toSeq
   }
   def connectCoreModules() : Unit = {
-    val mods = this.getCoreModules
+    val mods = this.getBusModules
     sysBus.connect(mods)
   }
   def generateHeader() : Unit = {
-    val mods = this.getMemoryModules
-    HeaderCreator(mods)
+    HeaderCreator(getMemoryBusModules,getRegBusModules)
   }
 }

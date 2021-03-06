@@ -1,9 +1,8 @@
 import chisel3.iotesters.PeekPokeTester
 import org.scalatest.{FlatSpec, Matchers}
-import rvcore.RVCoreImpl
 import rvcore.pipeline.RVPipeline
-import util.BinaryLoader
-
+import rvcore.util.BinaryLoader
+import trash.RVCoreImpl
 
 
 class WaveTester(dut: RVCoreImpl) extends PeekPokeTester(dut) {

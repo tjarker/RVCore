@@ -1,14 +1,12 @@
-package rvcore
+package trash
 
 import util._
 import chisel3._
-import peripherals.keyboard.Keyboard
-import peripherals.keyboard.lib.PS2Port
-import peripherals.ledvec.{LedVec, LedVecIO}
-import peripherals.sevenseg.{SevenSeg, SevenSegIO}
+import peripherals.ledvec.LedVecIO
 import rvcore.memory.{RAM, ROM}
 import rvcore.pipeline.RVPipeline
-import rvcore.systembus.{BusModule, MemoryMapper, SysBus, SystemBus}
+import rvcore.systembus.{BusModule, SysBus}
+import rvcore.util.{BinaryLoader, Program}
 
 import scala.collection.mutable.ListBuffer
 
@@ -47,7 +45,7 @@ class RVCoreImpl(program: Program) extends Module{
 
   //read value arbitration//////////////////////////////////////////////////////////////////////////////////////////////
 
-  MemoryMapper(this)
+  //MemoryMapper(this)
   sysBus.connect(coreDevs)
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

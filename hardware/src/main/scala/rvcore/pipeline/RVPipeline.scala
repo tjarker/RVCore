@@ -2,10 +2,10 @@ package rvcore.pipeline
 
 import chisel3._
 import rvcore.pipeline.lib.Interfaces._
-import rvcore.pipeline.lib.DebugPort
+import rvcore.pipeline.lib.{DebugPort, InstrBus}
 import rvcore.pipeline.stages.{EX, ID, IF, MEM, WB}
 import rvcore.pipeline.submodules.{ForwardingUnit, HazardDetectionUnit}
-import rvcore.systembus.{InstrBus, SysBusMasterIO}
+import rvcore.systembus.SysBusMasterIO
 
 class RVPipeline(branchPredictionScheme : String = "", sim: Boolean = false) extends Module {
   val io = IO(new Bundle{

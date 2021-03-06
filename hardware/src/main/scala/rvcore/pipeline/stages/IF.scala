@@ -3,8 +3,9 @@ package rvcore.pipeline.stages
 import chisel3._
 import rvcore.pipeline.lib.Interfaces._
 import rvcore.lib.OpcodesRV32I
+import rvcore.pipeline.lib.InstrBus
 import rvcore.pipeline.submodules._
-import rvcore.systembus.InstrBus
+
 
 class IF(branchPredictionScheme: String = "") extends MultiIOModule {
   val in = IO(Input(new EX_IF))

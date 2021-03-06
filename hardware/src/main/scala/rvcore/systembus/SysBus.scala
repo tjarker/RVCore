@@ -21,7 +21,7 @@ class SysBus extends Bundle {
 
   def connect(modules: Seq[BusModule]): Unit = {
     this.s.holdLow()
-    modules.zipWithIndex.foreach{case (cm, i) =>
+    modules.foreach{ cm =>
       cm.sysBusIO.m.holdLow()
 
       val sel = cm.isSelected(this.m.addr) && this.m.cmd =/= SysBusCmd.IDLE

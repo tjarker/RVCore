@@ -1,9 +1,10 @@
 package rvcore.memory
 
 import chisel3.util.Cat
-import util.Program
 import chisel3._
-import rvcore.systembus.{BusModule, InstrBus, MemoryBusModule, SysBusCmd, SysBusResp}
+import rvcore.pipeline.lib.InstrBus
+import rvcore.systembus.{BusModule, MemoryBusModule, SysBusCmd, SysBusResp}
+import rvcore.util.Program
 
 object ROM {
   def apply(refName: String, baseAddr: Int, program: Program) : ROM = {
@@ -28,3 +29,4 @@ class ROM(refName: String, program: Array[Int], baseAddr: Int) extends MemoryBus
     sysBusIO.s.rdData := Cat(imem(addr + 3.U), imem(addr + 2.U), imem(addr + 1.U), imem(addr))
   }
 }
+

@@ -1,8 +1,8 @@
 package rvcore
-import util.HeaderCreator
 import chisel3._
 import rvcore.pipeline.RVPipeline
 import rvcore.systembus.{BusModule, MemoryBusModule, RegBusModule, SysBus}
+import rvcore.util.HeaderFileCreator
 
 
 abstract class BareCore extends MultiIOModule{
@@ -11,6 +11,7 @@ abstract class BareCore extends MultiIOModule{
   val sysBus = Wire(new SysBus)
   sysBus <> pipeline.io.sysBusIO
 
+  // TODO: these can be optimized (can they be merged into a general function?
   private def getBusModules: Seq[BusModule] = {
     val fields = (Map[String, Any]() /: this.getClass.getDeclaredFields) { (a, f) =>
       f.setAccessible(true)
@@ -36,10 +37,25 @@ abstract class BareCore extends MultiIOModule{
     fields.filter(p => p._2.isInstanceOf[RegBusModule]).map(_._2.asInstanceOf[RegBusModule]).toSeq
   }
   def connectCoreModules() : Unit = {
+    checkForMemorySpaceOverlap()
     val mods = this.getBusModules
     sysBus.connect(mods)
   }
   def generateHeader() : Unit = {
-    HeaderCreator(getMemoryBusModules,getRegBusModules)
+    checkForMemorySpaceOverlap()
+    HeaderFileCreator(getMemoryBusModules,getRegBusModules,"header1.h")
+  }
+  def checkForMemorySpaceOverlap() : Unit = {
+    val ms = getBusModules.toList
+    ms.combinations(2).foreach { pair =>
+      val m1 = pair.head
+      val m2 = pair(1)
+      if(!m1.equals(m2) && (m1.range intersect m2.range).nonEmpty) throw new Exception(s"Error: Memory space of modules ${m1.refName} and ${m2.refName} overlap!")
+    }
+    for(m1 <- ms){
+      for(m2 <- ms){
+        if(!m1.equals(m2) && (m1.range intersect m2.range).nonEmpty) throw new Exception(s"Error: Memory space of modules ${m1.refName} and ${m2.refName} overlap!")
+      }
+    }
   }
 }

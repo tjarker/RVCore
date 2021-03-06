@@ -3,8 +3,9 @@ package rvcore.pipeline
 import chiseltest._
 import rvcore.lib.OpcodesRV32I.ECALL
 import rvcore.systembus.SysBusCmd
-import util.{BinaryDumper, Program, SimMemory}
+import util.SimMemory
 import chisel3._
+import rvcore.util.Program
 
 class PipelineSimWrapper(dut: RVPipeline, program: Program, memorySize: Int){
 

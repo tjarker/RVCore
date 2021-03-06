@@ -2,7 +2,7 @@ import chisel3._
 import chiseltest._
 import org.scalatest.FreeSpec
 import peripherals.keyboard.Keyboard
-import rvcore.systembus.SystemBusIO
+import trash.SystemBusIO
 
 class KeyboardTest extends FreeSpec with ChiselScalatestTester{
 

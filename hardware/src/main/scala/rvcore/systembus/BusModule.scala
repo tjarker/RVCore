@@ -62,8 +62,10 @@ abstract class RegBusModule(val typeName: String, refName: String, baseAddr: Int
 
     regs = pairs.map(_._2)
 
+    sysBusIO.s.holdLow()
+
     // select the correct register
-    Mux(RegNext(sysBusIO.m.cmd === SysBusCmd.READ), MuxLookup(RegNext(sysBusIO.m.addr), 0.U(32.W),
+    sysBusIO.s.rdData := Mux(RegNext(sysBusIO.m.cmd === SysBusCmd.READ), MuxLookup(RegNext(sysBusIO.m.addr), 0.U(32.W),
       pairs.map { case (addr,reg) =>
         (this.baseAddr + addr).U -> reg.reg.asUInt()
       }
@@ -78,6 +80,9 @@ abstract class RegBusModule(val typeName: String, refName: String, baseAddr: Int
 
       when(accessor.isWritten){
         reg.reg := sysBusIO.m.wrData.asTypeOf(reg.reg)
+      }
+      when(accessor.isRead){
+        sysBusIO.s.resp := SysBusResp.SENT
       }
 
       accessor

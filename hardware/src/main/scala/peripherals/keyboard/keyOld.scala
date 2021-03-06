@@ -4,7 +4,7 @@ import util.RingBuffer
 import chisel3._
 import chisel3.util._
 import peripherals.keyboard.lib.PS2Port
-import rvcore.systembus.{MemMappedReg, SystemBusIO}
+import trash.{MemMappedReg, SystemBusIO}
 
 
 class keyOld(baseAddr: Int) extends MultiIOModule {
@@ -12,8 +12,8 @@ class keyOld(baseAddr: Int) extends MultiIOModule {
   val bus = IO(new SystemBusIO)
 
   val status = MemMappedReg(baseAddr, bus, new StatusBundle, 0x00, true)
-  val config = MemMappedReg(baseAddr+4, bus, new ConfigBundle, 0x01, false)
-  val char = MemMappedReg(baseAddr+8, bus, UInt(8.W),0x00, false)
+  val config = trash.MemMappedReg(baseAddr+4, bus, new ConfigBundle, 0x01, false)
+  val char = trash.MemMappedReg(baseAddr+8, bus, UInt(8.W),0x00, false)
   val sendRqs = Seq(status._2,config._2,char._2)
   val statusReg = status._1
   val configReg = config._1

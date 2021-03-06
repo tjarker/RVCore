@@ -1,9 +1,9 @@
 package rvcore.pipeline.emulator
 
 import rvcore.pipeline.emulator.RVEmulator
-import util.{BinaryDumper, Program}
 import chiseltest._
 import rvcore.lib.OpcodesRV32I.ECALL
+import rvcore.util.Program
 
 class RVEmulatorSimWrapper(dut: RVEmulator, program: Program) {
 

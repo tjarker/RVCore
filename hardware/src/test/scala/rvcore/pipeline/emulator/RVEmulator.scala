@@ -1,9 +1,9 @@
 package rvcore.pipeline.emulator
 
-import util.BinaryLoader
 import java.io.{File, PrintWriter}
 import rvcore.pipeline.emulator.submodules._
 import chisel3._
+import rvcore.util.BinaryLoader
 
 
 class RVEmulator(program: Array[Int], memorySize: Int) extends Module {

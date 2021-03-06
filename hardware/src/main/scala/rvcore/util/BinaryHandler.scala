@@ -1,4 +1,4 @@
-package util
+package rvcore.util
 
 import java.io.{File, FileOutputStream, IOException}
 import java.nio.file.{Files, Paths}

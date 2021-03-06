@@ -4,7 +4,7 @@ import util.RingBuffer
 import chisel3._
 import chisel3.util._
 import peripherals.keyboard.lib.PS2Port
-import rvcore.systembus.{MemoryMappedModule, SystemBus}
+import trash.{MemoryMappedModule, SystemBus}
 
 class StatusBundle extends Bundle {
   val hasChar = Bool()

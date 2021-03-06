@@ -2,7 +2,7 @@ package peripherals.sevenseg
 
 import chisel3._
 import chisel3.util._
-import rvcore.systembus.{MemoryMappedModule, SystemBus}
+import trash.{MemoryMappedModule, SystemBus}
 
 object SevenSeg {
   def apply(sysBus: SystemBus, baseAddr: Int) : SevenSeg = {

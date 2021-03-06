@@ -1,10 +1,10 @@
 package rvcore.pipeline
 
-import util.BinaryLoader
 import chiseltest._
 import org.scalatest.FreeSpec
 import chisel3._
 import rvcore.pipeline.emulator.{RVEmulator, RVEmulatorSimWrapper}
+import rvcore.util.BinaryLoader
 
 
 class AllPrograms extends FreeSpec with ChiselScalatestTester{

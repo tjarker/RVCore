@@ -1,7 +1,7 @@
 MEMORY
 {
   rom      (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00001000
-  ram      (rw) : ORIGIN = 0x10000000, LENGTH = 0x00001000
+  ram      (rw) : ORIGIN = 0x00001000, LENGTH = 0x00001000
 }
 
 

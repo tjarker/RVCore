@@ -6,18 +6,19 @@ import rvcore.systembus.{BusModule, MemoryBusModule, SysBusCmd, SysBusResp}
 
 class RAM(refName: String, baseAddr: Int, size: Int) extends MemoryBusModule(refName, baseAddr, size) {
 
-  val banks = Seq.fill(4)(SyncReadMem(size / 4, UInt(8.W)))
+  val banks = Seq.fill(4)(Mem(size / 4, UInt(8.W)))
 
   val addr = sysBusIO.m.addr
+  val delAddr = RegNext(addr)
 
   val byteOffset = Wire(UInt(2.W))
   byteOffset := addr(1, 0)
 
-  val rdPorts = VecInit(Seq.tabulate(4)(i => banks(i).read(Mux(addr(1, 0) > i.U, addr(31, 2) + 1.U, addr(31, 2)))))
+  val rdPorts = VecInit(Seq.tabulate(4)(i => banks(i).read(Mux(delAddr(1, 0) > i.U, delAddr(31, 2) + 1.U, delAddr(31, 2)))))
   sysBusIO.s.rdData := 0.U
   sysBusIO.s.resp := SysBusResp.NULL
   when(RegNext(sysBusIO.m.cmd === SysBusCmd.READ)){
-    sysBusIO.s.resp := SysBusResp.SENT
+    sysBusIO.s.resp := SysBusResp.SUC
     sysBusIO.s.rdData := byteVecToUInt(VecInit(Seq.tabulate(4)(i => rdPorts(byteOffset + i.U))))
   }
 
@@ -42,4 +43,8 @@ object RAM {
     val ram = Module(new RAM(refName, baseAddr, size))
     ram
   }
+}
+
+object RAMGen extends App {
+  (new chisel3.stage.ChiselStage).emitVerilog(new RAM("hello",0x1000,4096))
 }

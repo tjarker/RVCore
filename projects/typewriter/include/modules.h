@@ -14,8 +14,8 @@ volatile int* const rom_stop  = (int*) 0x000000DB; // Stop address of ROM
 
 //led/////////////////////////////////////////////////////////
 typedef struct {
-  int   data;  // 0x00002000: data register         
-  int config;  // 0x00002004: Configuration Register
+  int   data;  // 0x00002100: data register         
+  int config;  // 0x00002104: Configuration Register
 } led_t;
-volatile led_t* const led = (led_t*) 0x00002000;
+volatile led_t* const led = (led_t*) 0x00002100;
 

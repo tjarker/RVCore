@@ -4,7 +4,7 @@ import rvcore.BareCore
 import rvcore.memory.{RAM, ROM}
 import chisel3._
 import peripherals.ledvec.{LedVec, LedVecIO}
-import rvcore.util.{BinaryLoader, CoreConstructor}
+import rvcore.util.{BinaryLoader, Constructor}
 
 class TypeWriterCore extends BareCore{
 
@@ -15,10 +15,10 @@ class TypeWriterCore extends BareCore{
 
   val ram = RAM("RAM0",0x1000,4096)
 
-  val ledm = Module(new LedVec("led",0x2000))
+  val ledm = Module(new LedVec("led",0x2100))
   led <> ledm.led
 
 }
 
-object TypeWriterCore extends CoreConstructor(() => new TypeWriterCore)
+object TypeWriterCore extends Constructor(() => new TypeWriterCore)
 

@@ -10,7 +10,7 @@ object SysBusCmd {
 
 object SysBusResp {
   val NULL = 0.U(2.W)
-  val SENT = 1.U(2.W)
+  val SUC = 1.U(2.W)
   val FAIL = 2.U(2.W)
   val ERROR = 3.U(2.W)
 }

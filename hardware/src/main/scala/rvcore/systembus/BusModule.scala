@@ -74,15 +74,18 @@ abstract class RegBusModule(val typeName: String, refName: String, baseAddr: Int
     // create access indicators and write control
     VecInit(pairs.map { case (addr,reg) =>
       val accessor = Wire(new Accessor)
-      val isAccessed = sysBusIO.m.addr === addr.U
+      val isAccessed = sysBusIO.m.addr === (addr+this.baseAddr).U
       accessor.isRead := RegNext(isAccessed && sysBusIO.m.cmd === SysBusCmd.READ)
       accessor.isWritten := isAccessed && sysBusIO.m.cmd === SysBusCmd.WRITE
 
       when(accessor.isWritten){
         reg.reg := sysBusIO.m.wrData.asTypeOf(reg.reg)
       }
+      when(RegNext(accessor.isWritten)){
+        sysBusIO.s.resp := SysBusResp.SUC
+      }
       when(accessor.isRead){
-        sysBusIO.s.resp := SysBusResp.SENT
+        sysBusIO.s.resp := SysBusResp.SUC
       }
 
       accessor

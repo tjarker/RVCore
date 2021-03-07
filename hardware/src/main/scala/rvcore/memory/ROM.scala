@@ -16,7 +16,7 @@ object ROM {
 class ROM(refName: String, program: Array[Int], baseAddr: Int) extends MemoryBusModule(refName, baseAddr, program.length){
   val instrBus = IO(Flipped(new InstrBus))
 
-  sysBusIO.s.resp := SysBusResp.SENT
+  sysBusIO.s.resp := SysBusResp.SUC
 
   val imem = VecInit(program.map(_.U(8.W)))
 

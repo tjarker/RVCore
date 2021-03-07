@@ -2,7 +2,8 @@ package rvcore
 import chisel3._
 import rvcore.pipeline.RVPipeline
 import rvcore.systembus.{BusModule, MemoryBusModule, RegBusModule, SysBus}
-import rvcore.util.HeaderFileCreator
+
+import java.io.PrintWriter
 
 
 abstract class BareCore extends MultiIOModule{
@@ -41,9 +42,24 @@ abstract class BareCore extends MultiIOModule{
     val mods = this.getBusModules
     sysBus.connect(mods)
   }
-  def generateHeader() : Unit = {
+  def generateHeader(path: String) : Unit = {
     checkForMemorySpaceOverlap()
-    HeaderFileCreator(getMemoryBusModules,getRegBusModules,"header1.h")
+
+    val mem = getMemoryBusModules
+    val mod = getRegBusModules
+
+    val sb = new StringBuilder
+
+    sb.append(s"//Memory${"/"*80}\n\n")
+    for(dev <- mem){
+      sb.append(dev.toStruct)
+    }
+    sb.append(s"//Devices${"/"*79}\n\n")
+    for(dev <- mod){
+      sb.append(dev.toStruct)
+    }
+    println(sb)
+    new PrintWriter(path) { write(sb.toString()); close() }
   }
   def checkForMemorySpaceOverlap() : Unit = {
     val ms = getBusModules.toList

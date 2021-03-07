@@ -1,16 +1,17 @@
 package projects.typewriter
 
 import chisel3._
-import rvcore.util.CoreConstructor
+import peripherals.ledvec.LedVecIO
+import rvcore.util.Constructor
 
 class TypeWriter extends Module {
   val io = IO(new Bundle{
-
+    val led = Output(new LedVecIO)
   })
 
-  val core = Module(CoreConstructor(new TypeWriterCore))
+  val core = Module(Constructor(new TypeWriterCore))
+  io.led <> core.led
+}
 
-}
-object TypeWriter extends App {
-  chisel3.Driver.execute(Array("--target-dir","../output/blink2"),() => new TypeWriter)
-}
+
+object TypeWriter extends Constructor(() => new TypeWriter,"build")

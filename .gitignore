@@ -11,8 +11,10 @@
 /hardware/project/
 /hardware/synthesis/rvbasys3.cache/
 /hardware/synthesis/rvbasys3.hw/
+/hardware/synthesis/rvbasys3.runs/
 /hardware/synthesis/rvbasys3.ip_user_files/
 /hardware/synthesis/rvbasys3.sim/
 /hardware/target/
 /hardware/test_run_dir/
 /output/
+output/

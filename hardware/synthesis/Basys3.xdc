@@ -27,22 +27,22 @@ create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports {cl
  
 
 ## LEDs
-set_property PACKAGE_PIN U16 [get_ports {io_led_led[0]}]					
-set_property PACKAGE_PIN E19 [get_ports {io_led_led[1]}]					
-set_property PACKAGE_PIN U19 [get_ports {io_led_led[2]}]					
-set_property PACKAGE_PIN V19 [get_ports {io_led_led[3]}]					
-set_property PACKAGE_PIN W18 [get_ports {io_led_led[4]}]					
-set_property PACKAGE_PIN U15 [get_ports {io_led_led[5]}]					
-set_property PACKAGE_PIN U14 [get_ports {io_led_led[6]}]					
-set_property PACKAGE_PIN V14 [get_ports {io_led_led[7]}]					
-set_property PACKAGE_PIN V13 [get_ports {io_led_led[8]}]					
-set_property PACKAGE_PIN V3  [get_ports {io_led_led[9]}]					
-set_property PACKAGE_PIN W3  [get_ports {io_led_led[10]}]					
-set_property PACKAGE_PIN U3  [get_ports {io_led_led[11]}]					
-set_property PACKAGE_PIN P3  [get_ports {io_led_led[12]}]					
-set_property PACKAGE_PIN N3  [get_ports {io_led_led[13]}]					
-set_property PACKAGE_PIN P1  [get_ports {io_led_led[14]}]					
-set_property PACKAGE_PIN L1  [get_ports {io_led_led[15]}]					
+set_property PACKAGE_PIN U16 [get_ports {led_led[0]}]					
+set_property PACKAGE_PIN E19 [get_ports {led_led[1]}]					
+set_property PACKAGE_PIN U19 [get_ports {led_led[2]}]					
+set_property PACKAGE_PIN V19 [get_ports {led_led[3]}]					
+set_property PACKAGE_PIN W18 [get_ports {led_led[4]}]					
+set_property PACKAGE_PIN U15 [get_ports {led_led[5]}]					
+set_property PACKAGE_PIN U14 [get_ports {led_led[6]}]					
+set_property PACKAGE_PIN V14 [get_ports {led_led[7]}]					
+set_property PACKAGE_PIN V13 [get_ports {led_led[8]}]					
+set_property PACKAGE_PIN V3  [get_ports {led_led[9]}]					
+set_property PACKAGE_PIN W3  [get_ports {led_led[10]}]					
+set_property PACKAGE_PIN U3  [get_ports {led_led[11]}]					
+set_property PACKAGE_PIN P3  [get_ports {led_led[12]}]					
+set_property PACKAGE_PIN N3  [get_ports {led_led[13]}]					
+set_property PACKAGE_PIN P1  [get_ports {led_led[14]}]					
+set_property PACKAGE_PIN L1  [get_ports {led_led[15]}]					
 	
 	
 ##Buttons
@@ -54,18 +54,18 @@ set_property PACKAGE_PIN L1  [get_ports {io_led_led[15]}]
 
 
 ##7 segment display
-set_property PACKAGE_PIN W7 [get_ports {io_sev_segment[0]}]					
-set_property PACKAGE_PIN W6 [get_ports {io_sev_segment[1]}]					
-set_property PACKAGE_PIN U8 [get_ports {io_sev_segment[2]}]					
-set_property PACKAGE_PIN V8 [get_ports {io_sev_segment[3]}]					
-set_property PACKAGE_PIN U5 [get_ports {io_sev_segment[4]}]					
-set_property PACKAGE_PIN V5 [get_ports {io_sev_segment[5]}]					
-set_property PACKAGE_PIN U7 [get_ports {io_sev_segment[6]}]					
+#set_property PACKAGE_PIN W7 [get_ports {io_sev_segment[0]}]					
+#set_property PACKAGE_PIN W6 [get_ports {io_sev_segment[1]}]					
+#set_property PACKAGE_PIN U8 [get_ports {io_sev_segment[2]}]					
+#set_property PACKAGE_PIN V8 [get_ports {io_sev_segment[3]}]					
+#set_property PACKAGE_PIN U5 [get_ports {io_sev_segment[4]}]					
+#set_property PACKAGE_PIN V5 [get_ports {io_sev_segment[5]}]					
+#set_property PACKAGE_PIN U7 [get_ports {io_sev_segment[6]}]					
 #set_property PACKAGE_PIN V7 [get_ports {dp}]							
-set_property PACKAGE_PIN U2 [get_ports {io_sev_anode[0]}]					
-set_property PACKAGE_PIN U4 [get_ports {io_sev_anode[1]}]					
-set_property PACKAGE_PIN V4 [get_ports {io_sev_anode[2]}]					
-set_property PACKAGE_PIN W4 [get_ports {io_sev_anode[3]}]					
+#set_property PACKAGE_PIN U2 [get_ports {io_sev_anode[0]}]					
+#set_property PACKAGE_PIN U4 [get_ports {io_sev_anode[1]}]					
+#set_property PACKAGE_PIN V4 [get_ports {io_sev_anode[2]}]					
+#set_property PACKAGE_PIN W4 [get_ports {io_sev_anode[3]}]					
 
 
 ##VGA Connector
@@ -91,10 +91,10 @@ set_property PACKAGE_PIN W4 [get_ports {io_sev_anode[3]}]
 
 
 ##USB HID (PS/2)
-set_property PACKAGE_PIN C17 [get_ports io_ps2_clk]						
-set_property PULLUP true [get_ports PS2Clk]
-set_property PACKAGE_PIN B17 [get_ports io_ps2_data]					
-set_property PULLUP true [get_ports PS2Data]
+#set_property PACKAGE_PIN C17 [get_ports io_ps2_clk]						
+#set_property PULLUP true [get_ports PS2Clk]
+#set_property PACKAGE_PIN B17 [get_ports io_ps2_data]					
+#set_property PULLUP true [get_ports PS2Data]
 
 
 ##Pmod Header JA

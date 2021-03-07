@@ -7,7 +7,7 @@ volatile int* const ram0_stop  = (int*) 0x00001FFF; // Stop address of RAM0
 
 //ROM/////////////////////////////////////////////////////////
 volatile int* const rom_start = (int*) 0x00000000; // Start address of ROM
-volatile int* const rom_stop  = (int*) 0x000000DB; // Stop address of ROM
+volatile int* const rom_stop  = (int*) 0x0000013B; // Stop address of ROM
 
 
 //Devices///////////////////////////////////////////////////////////////////////////////

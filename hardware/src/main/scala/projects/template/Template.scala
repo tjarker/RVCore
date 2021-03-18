@@ -11,7 +11,8 @@ class Template extends BareCore {
 
   val led = IO(Output(new LedVecIO))
 
-  val rom = ROM("ROM",0x0000,BinaryLoader.loadProgram("../projects/template/output/template.bin"))
+  //val rom = ROM("ROM",0x0000,BinaryLoader.loadProgram("../projects/template/output/template.bin"))
+  val rom = ROM("ROM",0x0000,BinaryLoader.loadProgramFromRes("template"))
   pipeline.io.instrBus <> rom.instrBus
 
   val ram = RAM("RAM0",0x1000,4096)

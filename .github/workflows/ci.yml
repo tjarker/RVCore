@@ -12,5 +12,5 @@ jobs:
       uses: olafurpg/setup-scala@v10
       with:
         java-version: "adopt@1.8"
-    - name: Build and Test
+    - name: Test
       run: make test

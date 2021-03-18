@@ -88,7 +88,4 @@ class RVPipeline(branchPredictionScheme : String = "", sim: Boolean = false) ext
 
 }
 
-object RVPipeline extends App {
-  (new chisel3.stage.ChiselStage).emitVerilog(new RVPipeline())
-}
 

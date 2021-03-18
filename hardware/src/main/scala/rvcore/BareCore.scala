@@ -1,5 +1,6 @@
 package rvcore
 import chisel3._
+import rvcore.coreDevices.HWInfo
 import rvcore.pipeline.RVPipeline
 import rvcore.systembus.{BusModule, MemoryBusModule, RegBusModule, SysBus}
 
@@ -11,6 +12,7 @@ abstract class BareCore extends MultiIOModule{
   val pipeline = Module(new RVPipeline)
   val sysBus = Wire(new SysBus)
   sysBus <> pipeline.io.sysBusIO
+
 
   // TODO: these can be optimized (can they be merged into a general function?
   private def getBusModules: Seq[BusModule] = {
@@ -52,11 +54,11 @@ abstract class BareCore extends MultiIOModule{
 
     sb.append(s"//Memory${"/"*80}\n\n")
     for(dev <- mem){
-      sb.append(dev.toStruct)
+      sb.append(dev.getCHeader)
     }
     sb.append(s"//Devices${"/"*79}\n\n")
     for(dev <- mod){
-      sb.append(dev.toStruct)
+      sb.append(dev.getCHeader)
     }
     println(sb)
     new PrintWriter(path) { write(sb.toString()); close() }

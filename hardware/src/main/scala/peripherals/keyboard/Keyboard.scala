@@ -4,7 +4,7 @@ import util.RingBuffer
 import chisel3._
 import chisel3.util._
 import peripherals.keyboard.lib.PS2Port
-import trash.{MemoryMappedModule, SystemBus}
+import rvcore.systembus.RegBusModule
 
 class StatusBundle extends Bundle {
   val hasChar = Bool()
@@ -13,14 +13,13 @@ class ConfigBundle extends Bundle {
   val isActivated = Bool()
 }
 
-class Keyboard(baseAddr: Int) extends MemoryMappedModule {
+class Keyboard(refName: String, baseAddr: Int) extends RegBusModule("key_t",refName,baseAddr,3) {
   val ps2 = IO(Input(new PS2Port))
 
   val statusReg = RegInit(0.U.asTypeOf(new StatusBundle))
   val configReg = RegInit(1.U.asTypeOf(new ConfigBundle))
   val charReg = RegInit(0.U(8.W))
 
-  val isRead = sysBus.mapRegs(Seq(statusReg,configReg,charReg),baseAddr,Seq(true,false,true))
 
   val buffer = Module(new RingBuffer(8,8))
   buffer.io.deq.read := 0.B
@@ -32,7 +31,7 @@ class Keyboard(baseAddr: Int) extends MemoryMappedModule {
   buffer.io.enq.data := Cat(ps2.data, shiftReg(10,1))(8,1)
 
   // when the char is read clear the flag
-  when(isRead(2) || !statusReg.hasChar){
+  when(!statusReg.hasChar){
     when(!buffer.io.deq.empty){
       statusReg.hasChar := 1.B
       charReg := buffer.io.deq.data
@@ -52,16 +51,5 @@ class Keyboard(baseAddr: Int) extends MemoryMappedModule {
         buffer.io.enq.write := 1.B
       }
     }
-  }
-}
-
-object Keyboard {
-  def apply(sysBus: SystemBus, baseAddr: Int) : Keyboard = {
-    val key = Module(new Keyboard(baseAddr))
-    key.sysBus.addr := sysBus.addr
-    key.sysBus.wrData := sysBus.wrData
-    key.sysBus.we := sysBus.we
-    key.sysBus.w := sysBus.w
-    key
   }
 }

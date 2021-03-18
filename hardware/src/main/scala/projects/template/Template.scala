@@ -2,9 +2,10 @@ package projects.template
 
 import chisel3.{Module, Output}
 import peripherals.ledvec.{LedVec, LedVecIO}
+import projects.typewriter.TypeWriterCore
 import rvcore.BareCore
 import rvcore.memory.{RAM, ROM}
-import rvcore.util.BinaryLoader
+import rvcore.util.{BinaryLoader, Constructor}
 
 class Template extends BareCore {
 
@@ -19,3 +20,6 @@ class Template extends BareCore {
   led <> ledm.led
 
 }
+
+
+object Template extends Constructor(() => new Template)

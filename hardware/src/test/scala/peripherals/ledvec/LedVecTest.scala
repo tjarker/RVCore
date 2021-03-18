@@ -2,7 +2,6 @@ import chisel3._
 import chiseltest._
 import org.scalatest.FreeSpec
 import peripherals.ledvec.LedVec
-import trash.SystemBusIO
 /*
 class LedVecTest extends FreeSpec with ChiselScalatestTester{
 

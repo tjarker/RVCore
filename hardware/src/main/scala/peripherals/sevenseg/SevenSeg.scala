@@ -2,25 +2,13 @@ package peripherals.sevenseg
 
 import chisel3._
 import chisel3.util._
-import trash.{MemoryMappedModule, SystemBus}
+import rvcore.systembus.RegBusModule
 
-object SevenSeg {
-  def apply(sysBus: SystemBus, baseAddr: Int) : SevenSeg = {
-    val sev = Module(new SevenSeg(baseAddr))
-    sev.sysBus.addr := sysBus.addr
-    sev.sysBus.wrData := sysBus.wrData
-    sev.sysBus.we := sysBus.we
-    sev.sysBus.w := sysBus.w
-    sev
-  }
-}
 
-class SevenSeg(baseAddr: Int) extends MemoryMappedModule{
+class SevenSeg(refName: String, baseAddr: Int) extends RegBusModule("sevSeg_t",refName,baseAddr,2){
   val sev = IO(Output(new SevenSegIO))
 
   val data = RegInit(0.U(16.W))
-
-  sysBus.mapReg(data, baseAddr)
 
   def tickCounter(max: Int, tick: Bool) = {
     val cntReg = RegInit(0.U(log2Ceil(max).W))

@@ -12,7 +12,7 @@ abstract class BusModule(val refName: String, val baseAddr: Int, val size: Int) 
   def isSelected(addr: UInt) : Bool = addr >= this.baseAddr.U && addr < (this.baseAddr+this.size).U
 
   override def toString: String = s"CoreModule $refName: %08X-%08X".format(baseAddr,baseAddr+size)
-  def toStruct: String = s"//$refName${"/"*(60-refName.length)}\n"
+  def getCHeader: String = s"//$refName${"/"*(60-refName.length)}\n"
 }
 
 /**
@@ -24,9 +24,9 @@ abstract class BusModule(val refName: String, val baseAddr: Int, val size: Int) 
  */
 abstract class MemoryBusModule(refName: String, baseAddr: Int, size: Int) extends BusModule(refName, baseAddr, size) {
 
-  override def toStruct: String = {
+  override def getCHeader: String = {
     val sb = new StringBuilder
-    sb.append(super.toStruct)
+    sb.append(super.getCHeader)
     sb.append(s"volatile int* const %-${refName.length+6}s = (int*) 0x%08X; // Start address of $refName\n".format(refName.toLowerCase+"_start",baseAddr))
     sb.append(s"volatile int* const %-${refName.length+6}s = (int*) 0x%08X; // Stop address of $refName\n".format(refName.toLowerCase+"_stop",baseAddr+size-1))
     sb.append("\n\n").toString()
@@ -37,7 +37,7 @@ abstract class RegBusModule(val typeName: String, refName: String, baseAddr: Int
 
   var regs: Seq[RegField] = null
 
-  override def toStruct: String = {
+  override def getCHeader: String = {
     val sb = new StringBuilder
     val name = this.refName // -> given at instantiation
     val typeName = this.typeName
@@ -45,7 +45,7 @@ abstract class RegBusModule(val typeName: String, refName: String, baseAddr: Int
     val descr = regs.map(_.description)
     val baseAddr = this.baseAddr
 
-    sb.append(super.toStruct)
+    sb.append(super.getCHeader)
     sb.append("typedef struct {\n")
     val l1 = fields.maxBy(_.length).length+1
     val l2 = descr.maxBy(_.length).length

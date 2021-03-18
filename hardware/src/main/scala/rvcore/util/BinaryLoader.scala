@@ -8,11 +8,6 @@ class Program(n: String, bin: Array[Int], len: Int) {
   val byteBinaries = bin
   val wordBinaries = bin.sliding(4, 4).map(a => a(3) << 24 | a(2) << 16 | a(1) << 8 | a(0)).toArray
   val length = len
-
-  override def toString: String = {
-    s"\n${"=" * 94}\nProgram name: $name\n${"-" * 94}\n" +
-      s"Instructions:\n${byteBinaries.slice(0, (4 * length)).sliding(4, 4).map(a => "0x%08x".format(a(3) << 24 | a(2) << 16 | a(1) << 8 | a(0))).sliding(8, 8).map(_.mkString(", ")).mkString("\n")}\n${"=" * 94}"
-  }
 }
 
 

@@ -7,7 +7,7 @@ import rvcore.systembus.{Accessor, RegBusModule, RegField}
 
 
 
-class LedVec(refName: String, baseAddr: Int) extends RegBusModule("led_t",refName,baseAddr,8){
+class LedVec(baseAddr: Int) extends RegBusModule("LED_VEC",baseAddr,8){
 
   class ConfigType extends Bundle {
     val active = Bool()
@@ -18,6 +18,10 @@ class LedVec(refName: String, baseAddr: Int) extends RegBusModule("led_t",refNam
   val data = RegInit(0x00.U(16.W))
   val config = RegInit(0.U.asTypeOf(new ConfigType))
   val accessors = Wire(Vec(2,new Accessor))
+  accessors := regMap(
+    0x00 -> RegField(data, "data", "data register"),
+    0x04 -> RegField(config, "config", "Configuration Register")
+  )
 
   when(config.active) {
     led.led := data
@@ -25,10 +29,7 @@ class LedVec(refName: String, baseAddr: Int) extends RegBusModule("led_t",refNam
     led.led := 0.U
   }
 
-  accessors := regMap(
-    0x00 -> RegField(data, "data", "data register"),
-    0x04 -> RegField(config, "config", "Configuration Register")
-  )
+
 
 }
 

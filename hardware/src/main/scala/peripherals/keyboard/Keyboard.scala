@@ -13,7 +13,7 @@ class ConfigBundle extends Bundle {
   val isActivated = Bool()
 }
 
-class Keyboard(refName: String, baseAddr: Int) extends RegBusModule("key_t",refName,baseAddr,3) {
+class Keyboard(baseAddr: Int) extends RegBusModule("KEYBOARD",baseAddr,3) {
   val ps2 = IO(Input(new PS2Port))
 
   val statusReg = RegInit(0.U.asTypeOf(new StatusBundle))

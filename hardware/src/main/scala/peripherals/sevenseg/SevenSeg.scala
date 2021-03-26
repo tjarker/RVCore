@@ -2,10 +2,10 @@ package peripherals.sevenseg
 
 import chisel3._
 import chisel3.util._
-import rvcore.systembus.RegBusModule
+import rvcore.systembus.{RegBusModule, RegField}
 
 
-class SevenSeg(refName: String, baseAddr: Int) extends RegBusModule("sevSeg_t",refName,baseAddr,2){
+class SevenSeg(baseAddr: Int) extends RegBusModule("SEVEN_SEGMENT_DISPLAY",baseAddr,1){
   val sev = IO(Output(new SevenSegIO))
 
   val data = RegInit(0.U(16.W))
@@ -23,6 +23,10 @@ class SevenSeg(refName: String, baseAddr: Int) extends RegBusModule("sevSeg_t",r
     cntReg := Mux(tick, 0.U, cntReg + 1.U)
     tick
   }
+
+  val accessors = regMap(
+    0x00 -> RegField(data, "data", "data register")
+  )
 
   sev.segment := 0.U
   sev.anode := 0.U

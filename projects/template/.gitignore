@@ -1,0 +1,12 @@
+
+/synthesis/rvbasys3.cache/
+/synthesis/rvbasys3.hw/
+/synthesis/rvbasys3.runs/
+/synthesis/rvbasys3.ip_user_files/
+/synthesis/rvbasys3.sim/
+/target/
+/test_run_dir/
+/output/
+output/
+*.log
+*.jou

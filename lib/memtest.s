@@ -1,8 +1,8 @@
 
 main:
   li s0, 0xDEADBEEF
-  li s1, 0
-  li s3, 0x1000
+  li s1, 0x1000
+  li s3, 0x2000
   li s4, 0x2000
   
 loop:

@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "name": "Template",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../../lib/**"
+            ],
+            "defines": []
+        }
+    ],
+    "version": 4
+}

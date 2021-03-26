@@ -9,6 +9,9 @@ A Risc-V Processor targeting the [Basys 3](https://reference.digilentinc.com/ref
 
 ## Hardware
 ### Design
+- Pipeline:
+    - [ ] add super class `pipelineStage`
+    - [ ] add wait for memory response
 - Essential Core devices:
     - [ ] ROM
     - [x] RAM

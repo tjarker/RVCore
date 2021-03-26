@@ -5,10 +5,12 @@ import rvcore.util.BinaryLoader
 import rvcore.pipeline.RVPipeline
 import chiseltest._
 import org.scalatest._
+import rvcore.pipeline.submodules._
 
 class BranchPredictionSchemeTesting extends FreeSpec with ChiselScalatestTester{
 
-  val predictionSchemes = List("Always", "Never", "Loop", "Index1", "Index2")
+  val predictionSchemes = List(() => new BranchPredictorAlwaysTaken, () => new BranchPredictorNeverTaken,
+    () => new BranchPredictorLoopcheck, () => new BranchPredictorIndex1, () => new BranchPredictorIndex2)
   val program = BinaryLoader.loadProgramFromRes("loop")
   val cycles = new Array[Int](predictionSchemes.size)
   var i = 0

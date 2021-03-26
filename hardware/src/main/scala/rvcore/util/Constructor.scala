@@ -20,7 +20,7 @@ object Constructor {
       if(!localArgs.contains("--top-name")) localArgs = localArgs ++ Array("-o", s"Top_$projectName")
       generateHardware(fct, localArgs)
     } else if(command == "generateHeader"){
-      generateHeaderFiles(fct, s"../projects/${projectName.toLowerCase}/include/modules.h")
+      generateHeaderFiles(fct, s"../projects/${projectName.toLowerCase}/include/MemoryMap.h")
     }
   }
 

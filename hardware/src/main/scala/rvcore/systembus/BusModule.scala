@@ -4,59 +4,35 @@ import chisel3._
 import chisel3.util.{MuxLookup, PriorityMux}
 import rvcore.systembus.RegField.{DEFAULT, RegFieldType}
 
-abstract class BusModule(val refName: String, val baseAddr: Int, val size: Int) extends MultiIOModule{
+abstract class BusModule(val defName: String, val baseAddr: Int, val size: Int) extends MultiIOModule{
   val sysBusIO = IO(new SysBusSlaveIO)
 
   val range = baseAddr until (baseAddr+size)
 
   def isSelected(addr: UInt) : Bool = addr >= this.baseAddr.U && addr < (this.baseAddr+this.size).U
 
-  override def toString: String = s"CoreModule $refName: %08X-%08X".format(baseAddr,baseAddr+size)
-  def getCHeader: String = s"//$refName${"/"*(60-refName.length)}\n"
+  override def toString: String = s"CoreModule $defName: %08X-%08X".format(baseAddr,baseAddr+size)
+  def getDef: String = ""
 }
 
 /**
  * [[BusModule]]
  *
- * @param refName
+ * @param defName
  * @param baseAddr
  * @param size
  */
-abstract class MemoryBusModule(refName: String, baseAddr: Int, size: Int) extends BusModule(refName, baseAddr, size) {
+abstract class MemoryBusModule(defName: String, baseAddr: Int, size: Int) extends BusModule(defName, baseAddr, size) {
 
-  override def getCHeader: String = {
-    val sb = new StringBuilder
-    sb.append(super.getCHeader)
-    sb.append(s"volatile int* const %-${refName.length+6}s = (int*) 0x%08X; // Start address of $refName\n".format(refName.toLowerCase+"_start",baseAddr))
-    sb.append(s"volatile int* const %-${refName.length+6}s = (int*) 0x%08X; // Stop address of $refName\n".format(refName.toLowerCase+"_stop",baseAddr+size-1))
-    sb.append("\n\n").toString()
-  }
+  override def getDef: String = s"#define %-${defName.length+4}s 0x%08X\n".format(defName, baseAddr) +
+                                s"#define %-${defName.length+4}s 0x%08X\n\n".format(defName+"_LEN",size)
 }
 
-abstract class RegBusModule(val typeName: String, refName: String, baseAddr: Int, size: Int) extends BusModule(refName, baseAddr, size) {
+abstract class RegBusModule(defName: String, baseAddr: Int, size: Int) extends BusModule(defName, baseAddr, size) {
 
   var regs: Seq[RegField] = null
 
-  override def getCHeader: String = {
-    val sb = new StringBuilder
-    val name = this.refName // -> given at instantiation
-    val typeName = this.typeName
-    val fields = regs.map(_.name)
-    val descr = regs.map(_.description)
-    val baseAddr = this.baseAddr
-
-    sb.append(super.getCHeader)
-    sb.append("typedef struct {\n")
-    val l1 = fields.maxBy(_.length).length+1
-    val l2 = descr.maxBy(_.length).length
-    fields.zip(descr).zipWithIndex.foreach{ case ((s,d),i) =>
-      val string = s"  int %${l1}s  // 0x%08X: %-${l2}s\n"
-      sb.append(string.format(s+";",baseAddr+4*i,d))
-    }
-    sb.append(s"} ${typeName};\n")
-    sb.append(s"volatile ${typeName}* const $name = (${typeName}*) 0x%08X;\n\n".format(baseAddr))
-    sb.toString()
-  }
+  override def getDef: String = s"#define $defName 0x%08X\n\n".format(baseAddr)
 
   def regMap(pairs: (Int, RegField)*) : Vec[Accessor] = {
 

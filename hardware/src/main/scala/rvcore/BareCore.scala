@@ -42,6 +42,7 @@ abstract class BareCore extends MultiIOModule{
   def connectCoreModules() : Unit = {
     checkForMemorySpaceOverlap()
     val mods = this.getBusModules
+    println(mods.map(_.toString).mkString("\n"))
     sysBus.connect(mods)
   }
   def generateHeader(path: String) : Unit = {
@@ -54,11 +55,11 @@ abstract class BareCore extends MultiIOModule{
 
     sb.append(s"//Memory${"/"*80}\n\n")
     for(dev <- mem){
-      sb.append(dev.getCHeader)
+      sb.append(dev.getDef)
     }
     sb.append(s"//Devices${"/"*79}\n\n")
     for(dev <- mod){
-      sb.append(dev.getCHeader)
+      sb.append(dev.getDef)
     }
     println(sb)
     new PrintWriter(path) { write(sb.toString()); close() }
@@ -68,11 +69,11 @@ abstract class BareCore extends MultiIOModule{
     ms.combinations(2).foreach { pair =>
       val m1 = pair.head
       val m2 = pair(1)
-      if(!m1.equals(m2) && (m1.range intersect m2.range).nonEmpty) throw new Exception(s"Error: Memory space of modules ${m1.refName} and ${m2.refName} overlap!")
+      if(!m1.equals(m2) && (m1.range intersect m2.range).nonEmpty) throw new Exception(s"Error: Memory space of modules ${m1.defName} and ${m2.defName} overlap!")
     }
     for(m1 <- ms){
       for(m2 <- ms){
-        if(!m1.equals(m2) && (m1.range intersect m2.range).nonEmpty) throw new Exception(s"Error: Memory space of modules ${m1.refName} and ${m2.refName} overlap!")
+        if(!m1.equals(m2) && (m1.range intersect m2.range).nonEmpty) throw new Exception(s"Error: Memory space of modules ${m1.defName} and ${m2.defName} overlap!")
       }
     }
   }

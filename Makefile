@@ -1,6 +1,8 @@
 
 project ?= template
 outdir ?= projects/$(project)/output/
+f ?= None
+o ?= None
 
 dump:
 	riscv32-unknown-elf-objdump -d output/$(f)/$(f).o

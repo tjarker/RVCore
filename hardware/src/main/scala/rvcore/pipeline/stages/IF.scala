@@ -7,7 +7,7 @@ import rvcore.pipeline.lib.InstrBus
 import rvcore.pipeline.submodules._
 
 
-class IF(branchPredictionScheme: String = "") extends MultiIOModule {
+class IF(branchPredictorGen: () => BranchPredictor) extends MultiIOModule {
   val in = IO(Input(new EX_IF))
   val out = IO(Output(new IF_ID))
   val instrBus = IO(new InstrBus)
@@ -23,14 +23,7 @@ class IF(branchPredictionScheme: String = "") extends MultiIOModule {
 
   instrBus.pc := pc //TODO: how can we make this read synchronous?
 
-  val branchPredictor = Module(branchPredictionScheme match {
-    case "Always" => new BranchPredictorAlwaysTaken
-    case "Never" => new BranchPredictorNeverTaken
-    case "Loop" => new BranchPredictorLoopcheck
-    case "Index1" => new BranchPredictorIndex1
-    case "Index2" => new BranchPredictorIndex2
-    case _ => new BranchPredictorNeverTaken
-  })
+  val branchPredictor = Module(branchPredictorGen())
   val branchPrediction = branchPredictor.io.takeBranchGuess && instr(6, 0) === OpcodesRV32I.BEQ.opcode
 
   branchGen.io.pc := pc

@@ -4,10 +4,10 @@ import chisel3._
 import rvcore.pipeline.lib.Interfaces._
 import rvcore.pipeline.lib.{DebugPort, InstrBus}
 import rvcore.pipeline.stages.{EX, ID, IF, MEM, WB}
-import rvcore.pipeline.submodules.{ForwardingUnit, HazardDetectionUnit}
+import rvcore.pipeline.submodules.{BranchPredictor, BranchPredictorNeverTaken, ForwardingUnit, HazardDetectionUnit}
 import rvcore.systembus.SysBusMasterIO
 
-class RVPipeline(branchPredictionScheme : String = "", sim: Boolean = false) extends Module {
+class RVPipeline(branchPredictor : () => BranchPredictor = () => new BranchPredictorNeverTaken, sim: Boolean = false) extends Module {
   val io = IO(new Bundle{
     val debugPort = if(sim) Some(Output(new DebugPort)) else None
     val sysBusIO = new SysBusMasterIO
@@ -15,7 +15,7 @@ class RVPipeline(branchPredictionScheme : String = "", sim: Boolean = false) ext
   })
 
   //pipeline stages
-  val ifStage = Module(new IF(branchPredictionScheme))
+  val ifStage = Module(new IF(branchPredictor))
   val idStage = Module(new ID(sim))
   val exStage = Module(new EX)
   val memStage = Module(new MEM)
@@ -35,7 +35,7 @@ class RVPipeline(branchPredictionScheme : String = "", sim: Boolean = false) ext
   val ex_mem = RegInit(0.U.asTypeOf(new EX_MEM))
   val mem_wb = RegInit(0.U.asTypeOf(new MEM_WB))
 
-  //IF stage connections
+  // IF stage connections
   ifStage.instrBus <> io.instrBus
   ifStage.in <> exStage.ctrl.branchOut
   ifStage.ctrl.pcEn := hazardDetectionUnit.io.pcEn
@@ -43,7 +43,7 @@ class RVPipeline(branchPredictionScheme : String = "", sim: Boolean = false) ext
     ifStage.out <> if_id
   }
 
-  //ID stage connections
+  // ID stage connections
   hazardDetectionUnit.io.instr := idStage.ctrl.instr
   idStage.ctrl.flushID := hazardDetectionUnit.io.flushID
   idStage.wb <> wbStage.out
@@ -51,7 +51,7 @@ class RVPipeline(branchPredictionScheme : String = "", sim: Boolean = false) ext
   idStage.out <> id_ex
 
 
-  //EX stage connections
+  // EX stage connections
   exStage.in <> id_ex
   ex_mem <> exStage.out
   forwardingUnit.io.rs1 := exStage.ctrl.rs1
@@ -65,14 +65,14 @@ class RVPipeline(branchPredictionScheme : String = "", sim: Boolean = false) ext
   exStage.ctrl.fwdB_en := forwardingUnit.io.fwdB_en
 
 
-  //MEM stage connections
+  // MEM stage connections
   memStage.in <> ex_mem
   memStage.out <> mem_wb
   forwardingUnit.io.rd_MEM := memStage.ctrl.rd
   forwardingUnit.io.aluRes_MEM := memStage.ctrl.aluRes
   forwardingUnit.io.wb_MEM := memStage.out.wb
 
-  //WB stage connections
+  // WB stage connections
   wbStage.in <> mem_wb
   forwardingUnit.io.rd_WB := wbStage.ctrl.rd
   forwardingUnit.io.res_WB := wbStage.ctrl.res

@@ -10,7 +10,7 @@ jobs:
       uses: actions/checkout@v1
     - name: Install drawio
       run: |
-        sudo apt update && sudo apt -y upgrade
+        sudo apt update
         sudo apt -y install curl xvfb nano \
         libgtk-3-0 \
         libnotify4 libnss3 libxss1 libxtst6 xdg-utils libatspi2.0-0 libappindicator3-1 libsecret-1-0 \

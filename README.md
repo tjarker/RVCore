@@ -6,7 +6,7 @@
 
 A Risc-V Processor targeting the [Basys 3](https://reference.digilentinc.com/reference/programmable-logic/basys-3/reference-manual) FPGA board.
 
-![Architecture](docs/images/Architecture.drawio.png)
+![Architecture](docs/images/sysArch.drawio.png)
 
 # TODO
 

@@ -10,11 +10,11 @@ jobs:
       uses: actions/checkout@v1
     - name: Install drawio
       run: 
-    - name: Test
-      run: 
         sudo apt update
         sudo apt -y install wget
         wget https://github.com/jgraph/drawio-desktop/releases/download/v12.3.2/draw.io-amd64-12.3.2.deb
         sudo dpkg -i draw.io-amd64-12.3.2.deb
         sudo apt -y -f install
+    - name: build docs
+      run: 
         make genDocPics

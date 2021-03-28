@@ -10,7 +10,7 @@ class TypeWriterCore extends BareCore{
 
   val led = IO(Output(new LedVecIO))
 
-  val rom = ROM("ROM",0x0000,BinaryLoader.loadProgramFromRes("addneg"))
+  val rom = ROM("ROM",0x0000, 0x1000,BinaryLoader.loadProgramFromRes("addneg"))
   pipeline.io.instrBus <> rom.instrBus
 
   val ram = RAM_old("RAM0",0x1000,4096)

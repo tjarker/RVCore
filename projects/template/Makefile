@@ -40,7 +40,7 @@ test:
 
 comp:
 	mkdir -p output
-	riscv32-unknown-elf-gcc $(INCLUDELIB) -I./include/ $(LinkLib) -v -g -ffreestanding -O0 -Wl,--gc-sections -nostartfiles -nostdlib -nodefaultlibs -Wl,-T,$(libDir)/new.ld $(libDir)/crt0.s  -o output/$(o).o $(f)
+	riscv32-unknown-elf-gcc $(INCLUDELIB) -I./include/ $(LinkLib) -v -g -ffreestanding -O0 -Wl,--gc-sections -nostartfiles -nostdlib -nodefaultlibs -Wl,-T,include/linker.ld include/startup.s  -o output/$(o).o $(f)
 	riscv32-unknown-elf-objcopy output/$(projectName).o --dump-section .text=output/$(o).bin
 
 asm:

@@ -20,18 +20,18 @@ object Constructor {
       if(!localArgs.contains("--top-name")) localArgs = localArgs ++ Array("-o", s"Top_$projectName")
       generateHardware(fct, localArgs)
     } else if(command == "genMemoryMap"){
-      generateHeaderFiles(fct, s"../projects/${projectName.toLowerCase}/include/MemoryMap.h")
+      generateMemoryMapFiles(fct, s"../projects/${projectName.toLowerCase}/include")
     }
   }
 
-  def generateHeaderFiles[T <: RawModule](fct: () => T, path: String): Unit = {
+  def generateMemoryMapFiles[T <: RawModule](fct: () => T, path: String): Unit = {
     (new chisel3.stage.ChiselStage).emitVerilog({
       val module = fct()
       module match {
         case core: BareCore =>
-          core.generateHeader(path)
+          core.generateLayoutFiles(path)
         case _ =>
-          getCore(module).generateHeader(path)
+          getCore(module).generateLayoutFiles(path)
       }
       scala.sys.exit(0)
       module

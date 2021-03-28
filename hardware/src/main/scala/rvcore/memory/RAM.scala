@@ -3,6 +3,7 @@ package rvcore.memory
 import rvcore.systembus.{MemoryBusModule, SysBusCmd, SysBusResp}
 import chisel3._
 import rvcore.lib.Helper.{DatatoByteVec, byteVecToUInt}
+import rvcore.systembus.memoryType._
 
 /**
  * A byte addressable random access memory
@@ -16,7 +17,7 @@ class RAM(
            refName: String,
            baseAddr: Int,
            size: Int
-         ) extends MemoryBusModule(refName, baseAddr, size) {
+         ) extends MemoryBusModule(refName, baseAddr, size, rw, true) {
   //--------------------------------------------------------------------------------------------------------------------
   require(size%4==0,"Memory size in bytes needs to be divisible by 4!")
   //--------------------------------------------------------------------------------------------------------------------

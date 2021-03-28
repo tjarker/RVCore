@@ -3,6 +3,8 @@ package rvcore.systembus
 import chisel3._
 import chisel3.util.{MuxLookup, PriorityMux}
 import rvcore.systembus.RegField.{DEFAULT, RegFieldType}
+import rvcore.systembus.memoryType.memoryType
+
 
 abstract class BusModule(val defName: String, val baseAddr: Int, val size: Int) extends MultiIOModule{
   val sysBusIO = IO(new SysBusSlaveIO)
@@ -14,7 +16,16 @@ abstract class BusModule(val defName: String, val baseAddr: Int, val size: Int) 
   override def toString: String = s"CoreModule $defName: %08X-%08X".format(baseAddr,baseAddr+size)
   def getDef: String = ""
 }
-
+object memoryType extends Enumeration {
+  protected case class memoryTypeVal(val str: String) extends super.Val {
+    override def toString(): String = str
+  }
+  val r = memoryTypeVal("r")
+  val rw = memoryTypeVal("rw")
+  val rx = memoryTypeVal("rx")
+  val rwx = memoryTypeVal("rwx")
+  type memoryType = Value
+}
 /**
  * [[BusModule]]
  *
@@ -22,7 +33,7 @@ abstract class BusModule(val defName: String, val baseAddr: Int, val size: Int) 
  * @param baseAddr
  * @param size
  */
-abstract class MemoryBusModule(defName: String, baseAddr: Int, size: Int) extends BusModule(defName, baseAddr, size) {
+abstract class MemoryBusModule(defName: String, baseAddr: Int, size: Int, val memoryType: memoryType, val hostsStack: Boolean = false) extends BusModule(defName, baseAddr, size) {
 
   override def getDef: String = s"#define %-${defName.length+4}s 0x%08X\n".format(defName, baseAddr) +
                                 s"#define %-${defName.length+4}s 0x%08X\n\n".format(defName+"_LEN",size)
@@ -31,6 +42,7 @@ abstract class MemoryBusModule(defName: String, baseAddr: Int, size: Int) extend
 abstract class RegBusModule(defName: String, baseAddr: Int, size: Int) extends BusModule(defName, baseAddr, size) {
 
   var regs: Seq[RegField] = null
+
 
   override def getDef: String = s"#define $defName 0x%08X\n\n".format(baseAddr)
 

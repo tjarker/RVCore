@@ -11,5 +11,5 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 libraryDependencies += "edu.berkeley.cs" %% "chiseltest" % "0.2.2"
 
 mainClass in (Compile, run) := Some("rvcore.util.ConstructorCLI")
-//fork in run := true
-//trapExit := false
+fork in run := true
+trapExit := false

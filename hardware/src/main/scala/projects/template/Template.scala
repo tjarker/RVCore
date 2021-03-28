@@ -10,9 +10,9 @@ import rvcore.util.{BinaryLoader, Constructor}
 class Template extends BareCore {
 
   val led = IO(Output(new LedVecIO))
-  val rom = ROM("ROM",0x0000,BinaryLoader.loadProgram("../projects/template/output/Template.bin"))
+  //val rom = ROM("ROM",0x0000,BinaryLoader.loadProgram("../projects/template/output/Template.bin"))
   //val rom = ROM("ROM",0x0000,BinaryLoader.loadProgram("../lib/ramtest.bin"))
-  //val rom = ROM("ROM",0x0000,BinaryLoader.loadProgramFromRes("memtest"))
+  val rom = ROM("ROM",0x0000,BinaryLoader.loadProgramFromRes("addneg"))
   pipeline.io.instrBus <> rom.instrBus
 
   val ram = RAM("RAM0",0x1000,4096)

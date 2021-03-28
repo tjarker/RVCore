@@ -1,53 +1,65 @@
 hardwareDir ?= ../../hardware
 libDir 		?= ../../lib
-projectName ?= Template
+projectName ?= $(lastword $(subst /, ,$(CURDIR)))
+f 			?= src/main.cpp
+objcopy		?= $(projectName)
 
 INCLUDELIB = `find $(libDir) -type d | sed s/^/-I/` # note the (`) backquotes
 LinkLib = `find $(libDir) -type d | sed s/^/-L/` # note the (`) backquotes
 
+#########################################################################################################################
+# build
 
-dump:
-	riscv32-unknown-elf-objdump -d output/$(projectName).o
+all: build synth program
 
-comp:
-	mkdir -p output
-	riscv32-unknown-elf-gcc $(INCLUDELIB) -I./include/ $(LinkLib) -v -g -ffreestanding -O0 -Wl,--gc-sections -nostartfiles -nostdlib -nodefaultlibs -Wl,-T,$(libDir)/new.ld $(libDir)/crt0.s  -o output/$(projectName).o src/main.cpp
-	riscv32-unknown-elf-objcopy output/$(projectName).o --dump-section .text=output/$(projectName).bin
+build: memmap comp gen
 
-genIncludes:
-	cd hardware && sbt 'run generateHeader $(project)'
+time:
+	$(eval t1 = $(shell date +%s))
+	@sleep 5
+	$(eval t2 = $(shell date +%s))
+	@echo $(t1)
+	@echo $(t2)
+	@echo $(shell expr $(t2) - $(t1) )
+
+
+#########################################################################################################################
+# Hardware
+
+memmap:
+	cd $(hardwareDir) && sbt 'run genMemoryMap $(projectName)'
 
 gen:
-	cd hardware && sbt 'run build $(project)'
-
-asm:
-	riscv32-unknown-elf-as -o ${f}.o ${f}.s
-	riscv32-unknown-elf-objcopy ${f}.o --dump-section .text=${f}.bin
-
-buildAsm:
-ifdef f
-	mkdir -p output/${f}
-	riscv32-unknown-elf-as -o output/${f}/${f}.o src/main/assembly/${f}.s
-	riscv32-unknown-elf-objcopy output/${f}/${f}.o --dump-section .text=output/${f}/${f}.bin
-	sbt 'runMain Top output/${f}/${f}.bin --target-dir output/${f}'
-	riscv32-unknown-elf-objdump -d output/${f}/${f}.o
-else
-	@echo "Define the C file you want to build with `f=fileName.s`"
-endif
+	cd $(hardwareDir) && sbt 'run build $(projectName)'
 
 test:
 	cd $(hardwareDir); sbt test
 
 #########################################################################################################################
+# Compiling
+
+comp:
+	mkdir -p output
+	riscv32-unknown-elf-gcc $(INCLUDELIB) -I./include/ $(LinkLib) -v -g -ffreestanding -O0 -Wl,--gc-sections -nostartfiles -nostdlib -nodefaultlibs -Wl,-T,$(libDir)/new.ld $(libDir)/crt0.s  -o output/$(o).o $(f)
+	riscv32-unknown-elf-objcopy output/$(projectName).o --dump-section .text=output/$(o).bin
+
+asm:
+	riscv32-unknown-elf-as -o ${f}.o ${f}.s
+	riscv32-unknown-elf-objcopy ${f}.o --dump-section .text=${f}.bin
+
+dump:
+	riscv32-unknown-elf-objdump -d output/$(projectName).o
+
+#########################################################################################################################
 # FPGA 
 
 synth:
-	vivado -mode batch -source synthesis/synth.tcl
+	vivado -mode batch -tempDir output -journal output/vivado.jou -log output/vivado.log -source synthesis/synth.tcl
 
 program:
-	vivado -mode batch -source synthesis/config.tcl
+	vivado -mode batch -tempDir output -journal output/vivado.jou -log output/vivado.log -source synthesis/config.tcl
 
-
+#########################################################################################################################
 
 getFunctionAddr:
 	ifdef func

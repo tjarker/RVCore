@@ -19,7 +19,7 @@ object Constructor {
       if(!localArgs.contains("--target-dir")) localArgs = localArgs ++ Array("--target-dir", s"../projects/${projectName.toLowerCase}/output")
       if(!localArgs.contains("--top-name")) localArgs = localArgs ++ Array("-o", s"Top_$projectName")
       generateHardware(fct, localArgs)
-    } else if(command == "generateHeader"){
+    } else if(command == "genMemoryMap"){
       generateHeaderFiles(fct, s"../projects/${projectName.toLowerCase}/include/MemoryMap.h")
     }
   }

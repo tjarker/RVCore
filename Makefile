@@ -66,4 +66,5 @@ getFunctionAddr:
 # docs
 
 genDocPics:
-	drawio -x -f png -o docs/images/ docs/schematics/
+	xvfb-run -a drawio --export --format png --output docs/images/ docs/schematics/ --disable-gpu --headless --no-sandbox
+	#drawio -x -f png -o docs/images/ docs/schematics/

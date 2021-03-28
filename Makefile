@@ -60,3 +60,10 @@ getFunctionAddr:
 	else 
 		@echo 'define a function with `func=function`'
 	endif
+
+
+########################################################################################
+# docs
+
+genDocPics:
+	drawio -x -f png -o docs/images/ docs/schematics/

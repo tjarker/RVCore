@@ -1,9 +1,12 @@
 # RVCore
 
 [![status](https://github.com/tjarker/RVCore/workflows/CI/badge.svg)](https://github.com/tjarker/RVCore/actions)
+[![Build Status](https://travis-ci.com/tjarker/RVCore.svg?label=hello)](https://travis-ci.com/tjarker/RVCore)
+
 
 A Risc-V Processor targeting the [Basys 3](https://reference.digilentinc.com/reference/programmable-logic/basys-3/reference-manual) FPGA board.
 
+![Architecture](docs/images/Architecture.drawio.png)
 
 # TODO
 

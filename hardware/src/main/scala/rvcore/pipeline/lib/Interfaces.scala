@@ -4,6 +4,17 @@ import chisel3._
 
 object Interfaces {
 
+  class MemoryOpBundle extends Bundle {
+    val read = Bool()
+    val write = Bool()
+    val signed = Bool()
+    val byte = Bool()
+    val halfWord = Bool()
+    def nop(): Unit = {
+      this := 0.U.asTypeOf(this)
+    }
+  }
+
   class IF_ID extends Bundle {
     val pc = UInt(32.W)
     val instr = SInt(32.W)
@@ -27,7 +38,7 @@ object Interfaces {
     val pcSrc = Bool()
     val wb = Bool()
     val wbSrc = Bool()
-    val mem = UInt(4.W)
+    val mem = new MemoryOpBundle
     val jump = Bool()
     val funct3 = UInt(3.W)
     val branchPrediction = Bool()
@@ -41,7 +52,7 @@ object Interfaces {
     // control
     val wb = Bool()
     val wbSrc = Bool()
-    val mem = UInt(4.W) //TODO: split into more explicit fields
+    val mem = new MemoryOpBundle
   }
 
   class MEM_WB extends Bundle {

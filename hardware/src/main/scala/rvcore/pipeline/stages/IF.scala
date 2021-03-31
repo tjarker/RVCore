@@ -16,37 +16,39 @@ class IF(branchPredictorGen: () => BranchPredictor) extends MultiIOModule {
     val instr = Output(SInt(32.W))
   })
 
-  val pc = RegInit(0.U(32.W))
+  val pc = RegInit((0xFFFFFFFFL-3).U(32.W))
+  val nextPC = WireDefault(pc)
+  pc := nextPC
 
   val branchGen = Module(new BranchGen)
   val instr = instrBus.instr.asSInt
 
-  instrBus.pc := pc //TODO: how can we make this read synchronous?
+  instrBus.pc := nextPC //TODO: how can we make this read synchronous? -> start pc at 0-4 and send next_pc to icache
 
   val branchPredictor = Module(branchPredictorGen())
   val branchPrediction = branchPredictor.io.takeBranchGuess && instr(6, 0) === OpcodesRV32I.BEQ.opcode
 
-  branchGen.io.pc := pc
-  branchGen.io.instruction := instr.asSInt()
-  branchPredictor.io.pc := pc
-  branchPredictor.io.newPc := branchGen.io.newPc
+  branchGen.io.pc           := pc
+  branchGen.io.instruction  := instr.asSInt()
+  branchPredictor.io.pc     := pc
+  branchPredictor.io.newPc  := branchGen.io.newPc
   //For index prediction
   branchPredictor.io.takeBranchEx := in.branch
-  branchPredictor.io.pcSrc := in.pcSrc
-  branchPredictor.io.index := in.branchIndex
+  branchPredictor.io.pcSrc        := in.pcSrc
+  branchPredictor.io.index        := in.branchIndex
 
-  out.instr := instr
-  ctrl.instr := instr
-  out.pc := pc
-  out.branchPrediction := branchPrediction
+  out.instr             := instr
+  ctrl.instr            := instr
+  out.pc                := pc
+  out.branchPrediction  := branchPrediction
 
-  pc := pc
+
   when(ctrl.pcEn) {
-    pc := pc + 4.U
+    nextPC := pc + 4.U
     when(in.branch) {
-      pc := in.pcNext
+      nextPC := in.pcNext
     }.elsewhen(branchPrediction) {
-      pc := branchGen.io.newPc
+      nextPC := branchGen.io.newPc
     }
   }
 

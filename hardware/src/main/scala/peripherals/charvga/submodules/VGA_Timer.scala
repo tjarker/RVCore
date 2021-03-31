@@ -43,7 +43,7 @@ class VGA_Timer extends Module{
     }
   }
 
-  // ripple clock
+  // ripple
   val rippleTick = hCounterReg === LINE-1.U
 
   // vertical counter

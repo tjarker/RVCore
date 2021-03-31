@@ -1,35 +1,24 @@
 package peripherals.sevenseg
 
+import util.Timing.{tickCounter, tickGen}
 import chisel3._
+import rvcore.systembus.{RegBusModule, RegField, RegFieldType}
 import chisel3.util._
-import rvcore.systembus.{RegBusModule, RegField}
 
-
-class SevenSeg(baseAddr: Int) extends RegBusModule("SEVEN_SEGMENT_DISPLAY",baseAddr,1){
+class SevenSeg(baseAddr: Int) extends RegBusModule("SEVEN_SEGMENT_DISPLAY",baseAddr,8){
   val sev = IO(Output(new SevenSegIO))
 
-  val data = RegInit(0.U(16.W))
+  class ConfigType extends Bundle {
+    val active = Bool()
+  }
 
-  def tickCounter(max: Int, tick: Bool) = {
-    val cntReg = RegInit(0.U(log2Ceil(max).W))
-    when(tick) {
-      cntReg := Mux(cntReg === max.U, 0.U, cntReg + 1.U)
-    }
-    cntReg
-  }
-  def tickGen(frequency: Int) = {
-    val cntReg = RegInit(0.U((if (frequency == 0 || log2Ceil(100000000 / frequency) == 0) 1 else log2Ceil(100000000 / frequency)).W))
-    val tick = cntReg === (if (frequency != 0) 100000000 / frequency else 0).U
-    cntReg := Mux(tick, 0.U, cntReg + 1.U)
-    tick
-  }
+  val data    = RegInit(0.U(16.W))
+  val config  = RegInit(0.U.asTypeOf(new ConfigType))
 
   val accessors = regMap(
-    0x00 -> RegField(data, "data", "data register")
+    0x00 -> RegField(data, RegFieldType.rw),
+    0x04 -> RegField(config, RegFieldType.rw)
   )
-
-  sev.segment := 0.U
-  sev.anode := 0.U
 
   val ticker = tickGen(200)
   val sevAnCounter = tickCounter(3, ticker)
@@ -54,22 +43,30 @@ class SevenSeg(baseAddr: Int) extends RegBusModule("SEVEN_SEGMENT_DISPLAY",baseA
   )
 
   //sevAn
-  switch(sevAnCounter) {
-    is(0.U) {
-      sev.segment  := hex2Sev(data(15,12))
-      sev.anode := "b0111".U
+  when(config.active) {
+    sev.anode := "b1111".U
+    val selData = WireDefault(0.U(4.W))
+    switch(sevAnCounter) {
+      is(0.U) {
+        selData := data(15, 12)
+        sev.anode := "b0111".U
+      }
+      is(1.U) {
+        selData := data(11, 8)
+        sev.anode := "b1011".U
+      }
+      is(2.U) {
+        selData := data(7, 4)
+        sev.anode := "b1101".U
+      }
+      is(3.U) {
+        selData := data(3, 0)
+        sev.anode := "b1110".U
+      }
     }
-    is(1.U) {
-      sev.segment  := hex2Sev(data(11,8))
-      sev.anode := "b1011".U
-    }
-    is(2.U) {
-      sev.segment  := hex2Sev(data(7,4))
-      sev.anode := "b1101".U
-    }
-    is(3.U) {
-      sev.segment  := hex2Sev(data(3,0))
-      sev.anode := "b1110".U
-    }
+    sev.segment := hex2Sev(selData)
+  }.otherwise{
+    sev.segment := "b111_1111".U
+    sev.anode := "b1111".U
   }
 }

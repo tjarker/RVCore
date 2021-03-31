@@ -2,12 +2,13 @@ package rvcore.systembus
 
 import chisel3._
 import chisel3.util.{MuxLookup, PriorityMux}
-import rvcore.systembus.RegField.{DEFAULT, RegFieldType}
+import rvcore.systembus.RegFieldType.{RegFieldType, r}
 import rvcore.systembus.memoryType.memoryType
 
 
 abstract class BusModule(val defName: String, val baseAddr: Int, val size: Int) extends MultiIOModule{
   val sysBusIO = IO(new SysBusSlaveIO)
+  sysBusIO.s.holdLow()
 
   val range = baseAddr until (baseAddr+size)
 
@@ -64,13 +65,18 @@ abstract class RegBusModule(defName: String, baseAddr: Int, size: Int) extends B
       val accessor = Wire(new Accessor)
       val isAccessed = sysBusIO.m.addr === (addr+this.baseAddr).U
       accessor.isRead := RegNext(isAccessed && sysBusIO.m.cmd === SysBusCmd.READ)
-      accessor.isWritten := isAccessed && sysBusIO.m.cmd === SysBusCmd.WRITE
 
-      when(accessor.isWritten){
-        reg.reg := sysBusIO.m.wrData.asTypeOf(reg.reg)
-      }
-      when(RegNext(accessor.isWritten)){
-        sysBusIO.s.resp := SysBusResp.SUC
+      if(reg.t == RegFieldType.rw){
+        accessor.isWritten := isAccessed && sysBusIO.m.cmd === SysBusCmd.WRITE
+
+        when(accessor.isWritten){
+          reg.reg := sysBusIO.m.wrData.asTypeOf(reg.reg)
+        }
+        when(RegNext(accessor.isWritten)){
+          sysBusIO.s.resp := SysBusResp.SUC
+        }
+      } else {
+        accessor.isWritten := 0.B
       }
       when(accessor.isRead){
         sysBusIO.s.resp := SysBusResp.SUC
@@ -87,33 +93,21 @@ class Accessor extends Bundle {
 }
 
 class RegField {
-  var description: String = ""
-  var name: String = ""
   var reg: Data = 0.B
-  var t: RegFieldType = DEFAULT
+  var t: RegFieldType = RegFieldType.rw
+}
+
+object RegFieldType extends Enumeration {
+  type RegFieldType = Value
+  val r, rw = Value
 }
 
 object RegField {
-  class RegFieldType
-  val READONLY = new RegFieldType
-  val WRITEONLY = new RegFieldType
-  val DEFAULT = new RegFieldType
 
-  def apply(reg: Data, name: String, t: RegFieldType, description: String) : RegField = {
+  def apply(reg: Data, t: RegFieldType = RegFieldType.rw) : RegField = {
     val n = new RegField
-    n.name = name
-    n.description = description
     n.reg = reg
     n.t = t
     n
-  }
-  def apply(reg: Data, name: String, t: RegFieldType) : RegField = {
-    apply(reg, name, t, "")
-  }
-  def apply(reg: Data, name: String, description: String) : RegField = {
-    apply(reg, name, DEFAULT, description)
-  }
-  def apply(reg: Data, name: String) : RegField = {
-    apply(reg, name, DEFAULT, "")
   }
 }

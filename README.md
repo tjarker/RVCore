@@ -9,6 +9,7 @@ A Risc-V Processor targeting the [Basys 3](https://reference.digilentinc.com/ref
 ![Architecture](docs/images/sysArch.drawio.png)
 
 # TODO
+- [ ] let a module define used pins and generate xdc constraints
 
 ## Hardware
 ### Design

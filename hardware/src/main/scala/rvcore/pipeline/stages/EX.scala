@@ -77,25 +77,17 @@ class EX extends MultiIOModule {
 
   //TODO: commands need to be stopped when pipeline is stalled due to waiting on read or write response
   sysBusMaster.holdLow()
-  when(in.mem =/= 0.U){
+  when(in.mem.write){
+    sysBusMaster.addr   := alu.io.output.asUInt()
+    sysBusMaster.cmd    := SysBusCmd.WRITE
+    sysBusMaster.wrData := fwdRegOp2.asUInt()
+    sysBusMaster.strb   := MuxCase(VecInit(Seq.fill(4)(1.B)), Seq(
+      in.mem.byte       -> VecInit(1.B, 0.B, 0.B, 0.B),
+      in.mem.halfWord   -> VecInit(1.B, 1.B, 0.B, 0.B)
+    ))
+  }.elsewhen(in.mem.read){
     sysBusMaster.addr := alu.io.output.asUInt()
-    when(in.mem(3)){
-      sysBusMaster.cmd := SysBusCmd.WRITE
-      sysBusMaster.wrData := fwdRegOp2.asUInt()
-      switch(in.mem(1,0)) {
-        is("b01".U) {
-          sysBusMaster.strb := VecInit(1.B,0.B,0.B,0.B)
-        }
-        is("b10".U){
-          sysBusMaster.strb := VecInit(1.B,1.B,0.B,0.B)
-        }
-        is("b11".U){
-          sysBusMaster.strb := VecInit(Seq.fill(4)(1.B))
-        }
-      }
-    }otherwise{
-      sysBusMaster.cmd := SysBusCmd.READ
-    }
+    sysBusMaster.cmd := SysBusCmd.READ
   }
 
   out.aluRes := alu.io.output

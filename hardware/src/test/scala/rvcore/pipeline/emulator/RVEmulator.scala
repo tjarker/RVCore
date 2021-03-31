@@ -110,10 +110,3 @@ class RVEmulator(program: Array[Int], memorySize: Int) extends Module {
     pc := alu.io.output.asUInt()
   }
 }
-
-
-// generate Verilog
-object RVEmulator extends App {
-  val program = BinaryLoader.loadProgramFromRes("loop")
-  chisel3.Driver.execute(args, () => new RVEmulator(program.wordBinaries,1048576))
-}

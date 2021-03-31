@@ -1,10 +1,10 @@
 package util
 
-class SimMemory(size: Int, init: Array[Int] = Array()){
+class SimMemory(size: Int, init: Array[BigInt] = Array()){
 
   val mem: Array[Array[BigInt]] = Array.fill(size/4)(Array.fill(4)(BigInt(0)))
   for(i <- init.indices){
-    writeWord(4*i, BigInt(init(i)) & BigInt(0xFFFFFFFF))
+    writeWord(4*i, init(i) & BigInt(0xFFFFFFFF))
   }
 
   def writeWord(addr: BigInt, data: BigInt) : Unit = {

@@ -17,22 +17,19 @@ class MEM extends MultiIOModule {
   })
 
   val rdData = WireDefault(VecInit(Seq.fill(4)(0.U(8.W))))
-  when(in.mem =/= 0.U && !in.mem(3)){
+  when(in.mem.read){
     rdData := DatatoByteVec(sysBusSlave.rdData)
   }
 
   out.memRes := 0.S
-  switch(in.mem(1, 0)) {
-    is("b01".U) {
-      out.memRes := Cat(VecInit(Seq.fill(24)(in.mem(2) & rdData(0)(7))).asUInt, rdData(0)).asSInt
-    }
-    is("b10".U) {
-      out.memRes := Cat(VecInit(Seq.fill(16)(in.mem(2) & rdData(1)(7))).asUInt, rdData(1), rdData(0)).asSInt
-    }
-    is("b11".U) {
-      out.memRes := (rdData(3) ## rdData(2) ## rdData(1) ## rdData(0)).asSInt
-    }
+  when(in.mem.byte){
+    out.memRes := Cat(VecInit(Seq.fill(24)(in.mem.signed & rdData(0)(7))).asUInt, rdData(0)).asSInt
+  }.elsewhen(in.mem.halfWord){
+    out.memRes := Cat(VecInit(Seq.fill(16)(in.mem.signed & rdData(1)(7))).asUInt, rdData(1), rdData(0)).asSInt
+  }.otherwise{
+    out.memRes := (rdData(3) ## rdData(2) ## rdData(1) ## rdData(0)).asSInt
   }
+
 
   out.wb := in.wb
   out.wbSrc := in.wbSrc

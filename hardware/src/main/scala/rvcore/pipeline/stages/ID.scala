@@ -29,55 +29,75 @@ class ID(sim: Boolean = false) extends MultiIOModule {
   val rs2 = in.instr(24, 20)
   val rd = in.instr(11, 7)
 
-  out.jump := opcode(2)
-  out.funct3 := funct3
-  out.branchPrediction := in.branchPrediction
+  out.jump              := opcode(2)
+  out.funct3            := funct3
+  out.branchPrediction  := in.branchPrediction
 
-  regFile.io.registerS1Index := rs1
-  regFile.io.registerS2Index := rs2
-  out.regOp1 := regFile.io.registerS1Data
-  out.regOp2 := regFile.io.registerS2Data
+  regFile.io.registerS1Index  := rs1
+  regFile.io.registerS2Index  := rs2
+  out.regOp1                  := regFile.io.registerS1Data
+  out.regOp2                  := regFile.io.registerS2Data
 
   regFile.io.registerWIndex := wb.rd
-  regFile.io.registerWData := wb.res
-  regFile.io.writeEn := wb.wb
+  regFile.io.registerWData  := wb.res
+  regFile.io.writeEn        := wb.wb
 
   immGen.io.instruction := in.instr
-  out.imm := immGen.io.immediate
+  out.imm               := immGen.io.immediate
 
-  out.rs1 := rs1
-  out.rs2 := rs2
-  out.rd := rd
-  out.pc := in.pc
-  out.wb := false.B
+  out.rs1     := rs1
+  out.rs2     := rs2
+  out.rd      := rd
+  out.pc      := in.pc
+  out.wb      := false.B
   out.aluSrc1 := 0.U // 0=rs1 , 1=pc, 2=0
   out.aluSrc2 := 0.U // 0=rs2, 1=imm , 2=1//TODO: should be bool?
-  out.aluOp := add
-  out.mem := 0.U
-  out.pcSrc := false.B
-  out.wbSrc := false.B // alu
-  out.brSrc := false.B // 0=pc, 1=reg
+  out.aluOp   := add
+  out.pcSrc   := false.B
+  out.wbSrc   := false.B // alu
+  out.brSrc   := false.B // 0=pc, 1=reg
+  out.mem.nop()
 
   switch(opcode) {
     is(LB.opcode) {
-      out.wb := true.B
+      out.wb      := true.B
       out.aluSrc2 := 1.U
-      out.wbSrc := true.B
+      out.wbSrc   := true.B
       switch(funct3) {
         is(LB.funct3) {
-          out.mem := "b0101".U
+          out.mem.read      := 1.B
+          out.mem.write     := 0.B
+          out.mem.signed    := 1.B
+          out.mem.byte      := 1.B
+          out.mem.halfWord  := 0.B
         }
         is(LBU.funct3) {
-          out.mem := "b0001".U
+          out.mem.read      := 1.B
+          out.mem.write     := 0.B
+          out.mem.signed    := 0.B
+          out.mem.byte      := 1.B
+          out.mem.halfWord  := 0.B
         }
         is(LH.funct3) {
-          out.mem := "b0110".U
+          out.mem.read      := 1.B
+          out.mem.write     := 0.B
+          out.mem.signed    := 1.B
+          out.mem.byte      := 0.B
+          out.mem.halfWord  := 1.B
         }
         is(LHU.funct3) {
-          out.mem := "b0010".U
+          out.mem.read      := 1.B
+          out.mem.write     := 0.B
+          out.mem.signed    := 0.B
+          out.mem.byte      := 0.B
+          out.mem.halfWord  := 1.B
         }
         is(LW.funct3) {
-          out.mem := "b0111".U
+          out.mem.read      := 1.B
+          out.mem.write     := 0.B
+          out.mem.signed    := 0.B
+          out.mem.byte      := 0.B
+          out.mem.halfWord  := 0.B
         }
       }
     }
@@ -85,18 +105,30 @@ class ID(sim: Boolean = false) extends MultiIOModule {
       out.aluSrc2 := 1.U
       switch(funct3) {
         is(SB.funct3) {
-          out.mem := "b1001".U
+          out.mem.read      := 0.B
+          out.mem.write     := 1.B
+          out.mem.signed    := 0.B
+          out.mem.byte      := 1.B
+          out.mem.halfWord  := 0.B
         }
         is(SH.funct3) {
-          out.mem := "b1010".U
+          out.mem.read      := 0.B
+          out.mem.write     := 1.B
+          out.mem.signed    := 0.B
+          out.mem.byte      := 0.B
+          out.mem.halfWord  := 1.B
         }
         is(SW.funct3) {
-          out.mem := "b1011".U
+          out.mem.read      := 0.B
+          out.mem.write     := 1.B
+          out.mem.signed    := 0.B
+          out.mem.byte      := 0.B
+          out.mem.halfWord  := 0.B
         }
       }
     }
     is(ADDI.opcode) {
-      out.wb := true.B
+      out.wb      := true.B
       out.aluSrc2 := 1.U
       switch(funct3) {
         is(ADDI.funct3) {
@@ -164,40 +196,40 @@ class ID(sim: Boolean = false) extends MultiIOModule {
       }
     }
     is(AUIPC.opcode) {
-      out.wb := true.B
+      out.wb      := true.B
       out.aluSrc1 := 1.U //pc
       out.aluSrc2 := 1.U //imm
     }
     is(LUI.opcode) {
-      out.wb := true.B
+      out.wb      := true.B
       out.aluSrc1 := 2.U // 0
       out.aluSrc2 := 1.U // imm
     }
     is(BEQ.opcode) {
-      out.wb := false.B
+      out.wb    := false.B
       out.pcSrc := true.B
     }
     is(JAL.opcode) {
-      out.wb := true.B
+      out.wb      := true.B
       out.aluSrc1 := 1.U // pc
       out.aluSrc2 := 2.U // 1
-      out.pcSrc := true.B
+      out.pcSrc   := true.B
     }
     is(JALR.opcode) {
-      out.wb := true.B
-      out.brSrc := true.B
+      out.wb      := true.B
+      out.brSrc   := true.B
       out.aluSrc1 := 2.U // pc
       out.aluSrc2 := 2.U // 1
-      out.pcSrc := true.B
+      out.pcSrc   := true.B
     }
   }
 
   ctrl.instr := in.instr
   when(ctrl.flushID) {
-    out.wb := 0.U
+    out.wb    := 0.U
     out.aluOp := 0.U
-    out.mem := 0.U
     out.wbSrc := 0.B
     out.pcSrc := false.B
+    out.mem.nop()
   }
 }

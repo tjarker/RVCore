@@ -23,7 +23,8 @@ class HazardDetectionUnit extends Module {
   val rs2 = io.instr(24, 20)
   val rs1IsAccessed = io.rd_EX === rs1
   val rs2IsAccessed = io.rd_EX === rs2
-  when((rs1IsAccessed || rs2IsAccessed) && io.wbSrc_EX) { //io.wbSrc_EX = we have a mem access in ex
+  val loadUseHazard = (rs1IsAccessed || rs2IsAccessed) && io.wbSrc_EX //io.wbSrc_EX = we have a mem access in ex
+  when(loadUseHazard || RegNext(loadUseHazard)) {
     io.pcEn := false.B
     io.flushID := true.B
     io.enableIF_ID := false.B

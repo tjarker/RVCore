@@ -19,7 +19,7 @@ class EX extends MultiIOModule {
     val fwdB_en = Input(Bool())
     val branchOut = Output(new EX_IF)
   })
-  val sysBusMaster = IO(Output(new MasterChannel))
+
   //Bubble control signals
   ctrl.rs1 := in.rs1
   ctrl.rs2 := in.rs2
@@ -75,20 +75,7 @@ class EX extends MultiIOModule {
     }
   }
 
-  //TODO: commands need to be stopped when pipeline is stalled due to waiting on read or write response
-  sysBusMaster.holdLow()
-  when(in.mem.write){
-    sysBusMaster.addr   := alu.io.output.asUInt()
-    sysBusMaster.cmd    := SysBusCmd.WRITE
-    sysBusMaster.wrData := fwdRegOp2.asUInt()
-    sysBusMaster.strb   := MuxCase(VecInit(Seq.fill(4)(1.B)), Seq(
-      in.mem.byte       -> VecInit(1.B, 0.B, 0.B, 0.B),
-      in.mem.halfWord   -> VecInit(1.B, 1.B, 0.B, 0.B)
-    ))
-  }.elsewhen(in.mem.read){
-    sysBusMaster.addr := alu.io.output.asUInt()
-    sysBusMaster.cmd := SysBusCmd.READ
-  }
+
 
   out.aluRes := alu.io.output
   out.regOp2 := fwdRegOp2

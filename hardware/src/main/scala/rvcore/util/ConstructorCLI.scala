@@ -14,7 +14,7 @@ object ConstructorCLI extends App {
   val projectName = args(1)
   var argVec = args.slice(2, args.length)
 
-  Constructor.run(projectName,() => Class.forName(s"projects.${projectName.toLowerCase}.${findMatch(projectName)}").getDeclaredConstructor().newInstance().asInstanceOf[RawModule], cmd, argVec)
+  Constructor.run(projectName,Class.forName(s"projects.${projectName.toLowerCase}.${findMatch(projectName)}").getDeclaredConstructor().newInstance().asInstanceOf[RawModule], cmd, argVec)
 
   def findMatch(project: String): String = {
     println(new java.io.File(".").getCanonicalPath)

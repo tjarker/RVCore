@@ -10,7 +10,7 @@ int main(){
     while(true){
         vga.set(counter);
         counter += 1;
-        for(int i = 0; i < 800000; i++){}
+        for(int i = 0; i < 8000000; i++){}
     }
 
 }

@@ -20,5 +20,5 @@ class TypeWriterCore extends BareCore{
 
 }
 
-object TypeWriterCore extends Constructor(() => new TypeWriterCore)
+object TypeWriterCore extends Constructor(new TypeWriterCore)
 

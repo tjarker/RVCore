@@ -14,4 +14,4 @@ class TypeWriter extends Module {
 }
 
 
-object TypeWriter extends Constructor(() => new TypeWriter,"build")
+object TypeWriter extends Constructor(new TypeWriter,"build")

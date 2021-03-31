@@ -57,12 +57,12 @@ object Interfaces {
 
   class MEM_WB extends Bundle {
     // data
-    val memRes = SInt(32.W)
     val aluRes = SInt(32.W)
     val rd = UInt(5.W)
     // control
     val wb = Bool()
     val wbSrc = Bool()
+    val mem = new MemoryOpBundle
   }
 
   class WB_ID extends Bundle {

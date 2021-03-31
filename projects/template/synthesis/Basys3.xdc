@@ -110,7 +110,7 @@ set_property PACKAGE_PIN W4 [get_ports {sev_anode[3]}]
 
 ##Pmod Header JB
 set_property PACKAGE_PIN A14 [get_ports {reset}]					
-#set_property PACKAGE_PIN A16 [get_ports {clock}]					
+set_property PACKAGE_PIN A16 [get_ports {count}]					
 #set_property PACKAGE_PIN B15 [get_ports {io_btn}]					
 #set_property PACKAGE_PIN B16 [get_ports {JB[3]}]					
 #set_property PACKAGE_PIN A15 [get_ports {JB[4]}]					

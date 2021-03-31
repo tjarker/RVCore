@@ -10,6 +10,7 @@ A Risc-V Processor targeting the [Basys 3](https://reference.digilentinc.com/ref
 
 # TODO
 - [ ] let a module define used pins and generate xdc constraints
+- [ ] Can we actually exclude that a double bubble insertion when load-use needs forwarding from wb?
 
 ## Hardware
 ### Design

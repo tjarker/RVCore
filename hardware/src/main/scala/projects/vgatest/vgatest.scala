@@ -39,6 +39,6 @@ class vgatest extends BareCore {
 }
 
 
-object vgatest extends Constructor(() => new vgatest)
+object vgatest extends Constructor(new vgatest)
 
-object MemMapvgatest extends Constructor(() => new vgatest, "genMemoryMap")
+object MemMapvgatest extends Constructor(new vgatest, "genMemoryMap")

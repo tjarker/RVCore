@@ -78,8 +78,8 @@ class RVPipeline(branchPredictor : () => BranchPredictor = () => new BranchPredi
   forwardingUnit.io.res_WB := wbStage.ctrl.res
   forwardingUnit.io.wb_WB := wbStage.out.wb
 
-  io.sysBusIO.m <> exStage.sysBusMaster
-  io.sysBusIO.s <> memStage.sysBusSlave
+  io.sysBusIO.m <> memStage.sysBusMaster
+  io.sysBusIO.s <> wbStage.sysBusSlave
 
   // flushes
   when(hazardDetectionUnit.io.flushIF) {

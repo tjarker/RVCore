@@ -3,7 +3,7 @@ package rvcore.util
 import chisel3.RawModule
 import rvcore.BareCore
 
-class Constructor[T <: RawModule](fct: () => T, command: String = "build", args: Array[String] = Array.empty) extends App{
+class Constructor[T <: RawModule](fct: => T, command: String = "build", args: Array[String] = Array.empty) extends App{
   Constructor.run(this.getClass.getCanonicalName.split('.')(1),fct,command,args)
 }
 object Constructor {
@@ -13,7 +13,7 @@ object Constructor {
     core
   }
 
-  def run[T <: RawModule](projectName: String, fct: () => T, command: String = "build", args: Array[String] = Array.empty) : Unit = {
+  def run[T <: RawModule](projectName: String, fct: => T, command: String = "build", args: Array[String] = Array.empty) : Unit = {
     var localArgs = args
     if(command == "build") {
       if(!localArgs.contains("--target-dir")) localArgs = localArgs ++ Array("--target-dir", s"../projects/${projectName.toLowerCase}/output")
@@ -24,9 +24,9 @@ object Constructor {
     }
   }
 
-  def generateMemoryMapFiles[T <: RawModule](fct: () => T, path: String): Unit = {
+  def generateMemoryMapFiles[T <: RawModule](fct: => T, path: String): Unit = {
     (new chisel3.stage.ChiselStage).emitVerilog({
-      val module = fct()
+      val module = fct
       module match {
         case core: BareCore =>
           core.generateLayoutFiles(path)
@@ -37,10 +37,10 @@ object Constructor {
       module
     })
   }
-  def generateHardware[T <: RawModule](fct: () => T, args: Array[String] = Array.empty): Unit = {
+  def generateHardware[T <: RawModule](fct: => T, args: Array[String] = Array.empty): Unit = {
     print(args.mkString(","))
     (new chisel3.stage.ChiselStage).emitVerilog({
-      val module = fct()
+      val module = fct
       if(module.isInstanceOf[BareCore]) module.asInstanceOf[BareCore].connectCoreModules()
       module
     }, args)

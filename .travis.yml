@@ -6,4 +6,4 @@ scala:
 jdk:
  - openjdk8
 script:
- - make test
+ - make testPipeline

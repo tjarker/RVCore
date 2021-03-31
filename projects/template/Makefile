@@ -43,7 +43,7 @@ vcd:
 
 comp:
 	mkdir -p output
-	riscv32-unknown-elf-gcc -Os $(INCLUDELIB) -I./lib/ -I./include/ $(LinkLib) -v -g -ffreestanding -O0 -Wl,--gc-sections -nostartfiles -nostdlib -nodefaultlibs -Wl,-T,include/linker.ld include/startup.s  -o output/$(o).o $(f)
+	riscv32-unknown-elf-gcc -O1 $(INCLUDELIB) -I./lib/ -I./include/ $(LinkLib) -v -g -ffreestanding -Wl,--gc-sections -nostartfiles -nostdlib -nodefaultlibs -Wl,-T,include/linker.ld include/startup.s  -o output/$(o).o $(f)
 	riscv32-unknown-elf-objcopy output/$(projectName).o --dump-section .text=output/$(o).bin
 
 asm:

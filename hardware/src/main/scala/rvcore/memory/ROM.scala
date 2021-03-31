@@ -22,15 +22,13 @@ class ROM(refName: String, program: Program, baseAddr: Int, maxSize: Int) extend
 
   sysBusIO.s.rdData := 0.U
 
-  val romMod = Module(new RealROM(program))
-  romMod.io.addr := instrBus.pc
-  instrBus.instr := romMod.io.data
+  //val romMod = Module(new RealROM(program))
+  //romMod.io.addr := instrBus.pc
+  //instrBus.instr := romMod.io.data
 
-  //val imem = VecInit(program.wordBinaries.map(_.U(32.W)))
-
-  //val addr = RegNext(instrBus.pc(31,2))
-  // non synchronous access for now
-  //instrBus.instr := imem(addr)
+  val imem = VecInit(program.wordBinaries.map(_.U(32.W)))
+  val addr = RegNext(instrBus.pc(31,2))
+  instrBus.instr := imem(addr)
 
   /*
   val addr = RegNext(sysBusIO.m.addr)

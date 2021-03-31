@@ -7,7 +7,7 @@ import peripherals.charvga.submodules.Resolution.R640x480
 import peripherals.charvga.submodules.{FontROM, VGA_Timer}
 import rvcore.systembus.{RegBusModule, RegField, RegFieldType}
 
-class CharVGA(baseAddr: Int) extends RegBusModule("VGA",baseAddr,4) {
+class CharVGA(baseAddr: Int) extends RegBusModule("VGA",baseAddr,4+2400) {
   val out = IO(Output(new VGAPort))
 
   val data = RegInit(0.U(8.W))
@@ -18,15 +18,20 @@ class CharVGA(baseAddr: Int) extends RegBusModule("VGA",baseAddr,4) {
     0x00 -> RegField(data,RegFieldType.rw)
   )
 
+  //val frameBuffer = SyncReadMem(2560,UInt(8.W))
+
+  //val bufOut = frameBuffer.read()
+
+
   val timer = Module(new VGA_Timer(R640x480))
   out.hsync := timer.io.hSync
   out.vsync := timer.io.vSync
 
   val fontRom = VecInit(FontROM.font.map(v => ("b"+v.reverse).U(8.W)))
-  val romLine = fontRom(data ## timer.io.y(3,0))
+  val romLine = fontRom(data ## timer.io.y(4,1))
 
 
-  val pixel = romLine(timer.io.x(2,0))
+  val pixel = romLine(timer.io.x(3,1))
   val rgbOut = VecInit(Seq.fill(4)(pixel)).asUInt
   when(timer.io.show){
     out.red := rgbOut

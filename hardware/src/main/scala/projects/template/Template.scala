@@ -19,8 +19,6 @@ class Template extends BareCore {
   val program = BinaryLoader.loadProgram("../projects/template/output/template.bin")
   println(s"Program size = ${program.length}")
   val rom = ROM("ROM", 0x0000, 0x1000, program)
-  //val rom = ROM("ROM",0x0000,BinaryLoader.loadProgram("../lib/ramtest.bin"))
-  //val rom = ROM("ROM",0x0000, 0x1000,BinaryLoader.loadProgramFromRes("addneg"))
   pipeline.io.instrBus <> rom.instrBus
 
   val ram = RAM("RAM0",0x1000,4096)
@@ -31,22 +29,6 @@ class Template extends BareCore {
 
   val sevm = Module(new SevenSeg(0x3000))
   sev <> sevm.sev
-
-  val countReg = RegInit(0.U(log2Ceil(10000).W))
-  val tick = countReg === 9999.U
-  val tickReg = RegInit(0.B)
-  tickReg := tickReg
-  when(tick){
-    countReg := 0.U
-    tickReg := ~tickReg
-  }.otherwise{
-    countReg := countReg + 1.U
-  }
-  count := tickReg
-
-
-
-
 
 }
 

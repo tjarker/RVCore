@@ -10,12 +10,13 @@ import rvcore.BareCore
 import rvcore.memory.{RAM, ROM}
 import rvcore.util.{BinaryLoader, Constructor}
 import chisel3.util._
+import peripherals.keyboard.lib.PS2Port
 
 class Template extends BareCore {
 
   val led = IO(Output(new LedVecIO))
   val sev = IO(Output(new SevenSegIO))
-  val count = IO(Output(Bool()))
+  //val ps2 = IO(Input(new PS2Port))
   val program = BinaryLoader.loadProgram("../projects/template/output/template.bin")
   println(s"Program size = ${program.length}")
   val rom = ROM("ROM", 0x0000, 0x1000, program)
@@ -29,6 +30,8 @@ class Template extends BareCore {
 
   val sevm = Module(new SevenSeg(0x3000))
   sev <> sevm.sev
+
+
 
 }
 

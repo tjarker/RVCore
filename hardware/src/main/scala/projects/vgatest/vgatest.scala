@@ -1,9 +1,11 @@
 package projects.vgatest
 
 
-import chisel3.{Module, Output}
+import chisel3._
 import peripherals.charvga.CharVGA
 import peripherals.charvga.lib.Interfaces.VGAPort
+import peripherals.keyboard.Keyboard
+import peripherals.keyboard.lib.PS2Port
 import peripherals.ledvec.{LedVec, LedVecIO}
 import peripherals.sevenseg.{SevenSeg, SevenSegIO}
 import projects.typewriter.TypeWriterCore
@@ -35,6 +37,14 @@ class vgatest extends BareCore {
   val vga = Module(new CharVGA(0x2000))
   vgaPort <> vga.out
 
+  val ps2 = IO(Input(new PS2Port))
+  val light = IO(Output(Bool()))
+  val key = Module(new Keyboard(0x5000))
+  ps2 <> key.ps2
+  light := key.light
+
+  val psOut = IO(Output(new PS2Port))
+  psOut <> ps2
 
 }
 

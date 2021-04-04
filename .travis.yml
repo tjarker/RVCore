@@ -7,3 +7,7 @@ jdk:
  - openjdk8
 script:
  - make testPipeline
+
+ cache:
+  directories:
+    

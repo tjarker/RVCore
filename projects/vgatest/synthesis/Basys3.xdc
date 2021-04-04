@@ -27,7 +27,7 @@ create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports {cl
  
 
 ## LEDs
-#set_property PACKAGE_PIN U16 [get_ports {led_led[0]}]					
+set_property PACKAGE_PIN U16 [get_ports {light}]					
 #set_property PACKAGE_PIN E19 [get_ports {led_led[1]}]					
 #set_property PACKAGE_PIN U19 [get_ports {led_led[2]}]					
 #set_property PACKAGE_PIN V19 [get_ports {led_led[3]}]					
@@ -91,10 +91,10 @@ set_property PACKAGE_PIN R19 [get_ports {vgaPort_vsync}]
 
 
 ##USB HID (PS/2)
-#set_property PACKAGE_PIN C17 [get_ports io_ps2_clk]						
-#set_property PULLUP true [get_ports PS2Clk]
-#set_property PACKAGE_PIN B17 [get_ports io_ps2_data]					
-#set_property PULLUP true [get_ports PS2Data]
+set_property PACKAGE_PIN C17 [get_ports ps2_clk]						
+set_property PULLUP true [get_ports PS2Clk]
+set_property PACKAGE_PIN B17 [get_ports ps2_data]					
+set_property PULLUP true [get_ports PS2Data]
 
 
 ##Pmod Header JA
@@ -110,8 +110,8 @@ set_property PACKAGE_PIN R19 [get_ports {vgaPort_vsync}]
 
 ##Pmod Header JB
 set_property PACKAGE_PIN A14 [get_ports {reset}]					
-#set_property PACKAGE_PIN A16 [get_ports {clock}]					
-#set_property PACKAGE_PIN B15 [get_ports {io_btn}]					
+set_property PACKAGE_PIN A16 [get_ports {psOut_clk}]					
+set_property PACKAGE_PIN B15 [get_ports {psOut_data}]					
 #set_property PACKAGE_PIN B16 [get_ports {JB[3]}]					
 #set_property PACKAGE_PIN A15 [get_ports {JB[4]}]					
 #set_property PACKAGE_PIN A17 [get_ports {JB[5]}]					

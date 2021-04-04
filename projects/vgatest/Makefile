@@ -43,15 +43,18 @@ vcd:
 
 comp:
 	mkdir -p output
-	riscv32-unknown-elf-gcc -Os $(INCLUDELIB) -I./lib/ -I./include/ $(LinkLib) -v -g -ffreestanding -O0 -Wl,--gc-sections -nostartfiles -nostdlib -nodefaultlibs -Wl,-T,include/linker.ld include/startup.s  -o output/$(o).o $(f)
+	riscv32-unknown-elf-gcc -W -Wall -O2 $(INCLUDELIB) -I./lib/ -I./include/ $(LinkLib) -v -g -ffreestanding -O0 -Wl,--gc-sections -nostartfiles -nostdlib -nodefaultlibs -Wl,-T,include/linker.ld include/startup.s  -o output/$(o).o $(f)
 	riscv32-unknown-elf-objcopy output/$(projectName).o --dump-section .text=output/$(o).bin
+	riscv32-unknown-elf-objcopy output/$(projectName).o --dump-section .rodata=output/$(o)_rodata.bin
+	#riscv32-unknown-elf-objcopy -O binary output/$(projectName).o output/$(o).bin
 
 asm:
 	riscv32-unknown-elf-as -o ${f}.o ${f}.s
 	riscv32-unknown-elf-objcopy ${f}.o --dump-section .text=${f}.bin
+	
 
 dump:
-	riscv32-unknown-elf-objdump -d output/$(projectName).o
+	riscv32-unknown-elf-objdump -D output/$(projectName).o
 
 #########################################################################################################################
 # FPGA 

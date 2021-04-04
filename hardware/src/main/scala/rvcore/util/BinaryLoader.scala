@@ -14,7 +14,11 @@ class Program(n: String, bin: Array[Int], len: Int) {
 object BinaryLoader {
   def loadBin(path: String): (Array[Int], Int) = {
     val bytes = Files.readAllBytes(Paths.get(path)).map(_ & 0xFF).sliding(4, 4).toArray
-    if (bytes(bytes.length - 1).length < 4) bytes(bytes.length - 1) = Array(0, 0, 0, 0)
+    if (bytes(bytes.length - 1).length < 4){
+      val ori = bytes(bytes.length - 1)
+      bytes(bytes.length - 1) = Array(0, 0, 0, 0)
+      ori.copyToArray(bytes(bytes.length - 1))
+    }
     (Array.concat(bytes.flatten, Array.fill(16)(0)), bytes.flatten.length / 4)
   }
 

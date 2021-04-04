@@ -16,6 +16,9 @@ abstract class BusModule(val defName: String, val baseAddr: Int, val size: Int) 
 
   override def toString: String = s"CoreModule $defName: %08X-%08X".format(baseAddr,baseAddr+size)
   def getDef: String = ""
+  val custom = new StringBuilder
+  def addCustomDef(cstm: String): Unit = custom.append(cstm+"\n")
+  def getCustom(): String = custom.toString()
 }
 object memoryType extends Enumeration {
   protected case class memoryTypeVal(val str: String) extends super.Val {
@@ -37,7 +40,8 @@ object memoryType extends Enumeration {
 abstract class MemoryBusModule(defName: String, baseAddr: Int, size: Int, val memoryType: memoryType, val hostsStack: Boolean = false) extends BusModule(defName, baseAddr, size) {
 
   override def getDef: String = s"#define %-${defName.length+4}s 0x%08X\n".format(defName, baseAddr) +
-                                s"#define %-${defName.length+4}s 0x%08X\n\n".format(defName+"_LEN",size)
+                                s"#define %-${defName.length+4}s 0x%08X\n".format(defName+"_LEN",size) +
+                                getCustom() + "\n"
 }
 
 abstract class RegBusModule(defName: String, baseAddr: Int, size: Int) extends BusModule(defName, baseAddr, size) {
@@ -45,7 +49,7 @@ abstract class RegBusModule(defName: String, baseAddr: Int, size: Int) extends B
   var regs: Seq[RegField] = null
 
 
-  override def getDef: String = s"#define $defName 0x%08X\n\n".format(baseAddr)
+  override def getDef: String = s"#define $defName 0x%08X\n".format(baseAddr)+getCustom()+"\n"
 
   def regMap(pairs: (Int, RegField)*) : Vec[Accessor] = {
 

@@ -9,8 +9,11 @@ A Risc-V Processor targeting the [Basys 3](https://reference.digilentinc.com/ref
 ![Architecture](docs/images/sysArch.drawio.png)
 
 # TODO
-- [ ] let a module define used pins and generate xdc constraints
+- [ ] Get PS2 keyboard controller working -> stable typewriter project
 - [ ] Can we actually exclude that a double bubble insertion when load-use needs forwarding from wb?
+- [ ] Transition to TileLink:
+	- [ ] let a module define used pins and generate xdc constraints
+
 
 ## Hardware
 ### Design

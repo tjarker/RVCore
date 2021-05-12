@@ -7,6 +7,7 @@ import peripherals.keyboard.lib.PS2Port
 import rvcore.systembus.{RegBusModule, RegField, RegFieldType}
 
 class CmdBundle extends Bundle {
+  val error = Bool()
   val readChar = Bool()
   val hasChar = Bool()
 }
@@ -63,6 +64,8 @@ class Keyboard(baseAddr: Int) extends RegBusModule("KEYBOARD",baseAddr,16) {
       charReg := newShift(8,1)
     }
   }
+
+
 
   /*
   val buffer = Module(new RingBuffer(8,8))

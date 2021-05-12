@@ -43,7 +43,7 @@ vcd:
 
 comp:
 	mkdir -p output
-	riscv32-unknown-elf-gcc -W -Wall -O2 $(INCLUDELIB) -I./lib/ -I./include/ $(LinkLib) -v -g -ffreestanding -O0 -Wl,--gc-sections -nostartfiles -nostdlib -nodefaultlibs -Wl,-T,include/linker.ld include/startup.s  -o output/$(o).o $(f)
+	riscv32-unknown-elf-gcc -W -Wall -fno-exceptions -O2 $(INCLUDELIB) -I./lib/ -I./include/ $(LinkLib) -v -g -ffreestanding -O0 -Wl,--gc-sections -nostartfiles -nostdlib -nodefaultlibs -Wl,-T,include/linker.ld include/startup.s  -o output/$(o).o $(f)
 	riscv32-unknown-elf-objcopy output/$(projectName).o --dump-section .text=output/$(o).bin
 	riscv32-unknown-elf-objcopy output/$(projectName).o --dump-section .rodata=output/$(o)_rodata.bin
 	#riscv32-unknown-elf-objcopy -O binary output/$(projectName).o output/$(o).bin

@@ -10,6 +10,9 @@ A Risc-V Processor targeting the [Basys 3](https://reference.digilentinc.com/ref
 
 # TODO
 - [ ] Get PS2 keyboard controller working -> stable typewriter project
+- [ ] include pin usage for busmodules
+- [ ] abolish reg mem separation -> some modules might need both base types
+- [ ] make special mem for constant vars and move .rodata to that mem in linker script
 - [ ] Can we actually exclude that a double bubble insertion when load-use needs forwarding from wb?
 - [ ] Transition to TileLink:
 	- [ ] let a module define used pins and generate xdc constraints

@@ -24,6 +24,10 @@ typedef struct {
 class Keyboard {
 
     private: volatile key_t* key;
+    private: bool wasRelease = false;
+    private: bool wasExtended = false;
+    private: bool hasNewChar = false;
+    private: uint8_t lastChar = 0;
 
     public: Keyboard(uint32_t addr){
         key = (key_t*) addr;
@@ -31,13 +35,37 @@ class Keyboard {
     public: ~Keyboard(){
 
     }
-    public: uint8_t hasChar() {
+    public: bool hasChar(){
+        if(hasNewCode()){
+            uint8_t code = getNewCode();
+            if(code == 0xF0){
+                wasRelease = true;
+            } else if(code == 0xE0){
+                wasExtended = true;
+            } else {
+                if(wasRelease){
+                    wasRelease = false;
+                } else if(wasExtended){
+                    wasExtended = false;
+                } else {
+                    lastChar = code;
+                    hasNewChar = true;
+                } 
+            }
+        }
+        return hasNewChar;
+    }
+    private: bool hasNewCode() {
         return key->status & 0x01;
     }
-    public: uint8_t getChar() {
+    private: uint8_t getNewCode() {
         uint8_t code = key->data;
         signalRead();
         return code;
+    }
+    public: uint8_t getChar() {
+        hasNewChar = false;
+        return lastChar;
     }
     private: void signalRead() {
         key->status |= 0x02;
@@ -47,6 +75,9 @@ class Keyboard {
     }
     public: uint16_t getShiftState(){
         return key->shift;
+    }
+    public: bool getError(){
+        return key->status & (1<<2);
     }
 
     private: static const uint8_t code2Char[0x90];

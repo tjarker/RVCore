@@ -28,11 +28,12 @@ int main(){
         while(!key.hasChar()){
             //for(int i = 0; i < 1000; i++){}
         }
+        vga.printBin(6,0,key.getError(),1);
         vga.printHex(x,y++,key.getChar(),2);
         y++;
         if(y >= 28){
             y = 1;
-            x += 10;
+            x += 4;
         }
         if(x >= 76){
             vga.clearRectangle(0,1,80,30);

@@ -10,7 +10,7 @@ import peripherals.ledvec.{LedVec, LedVecIO}
 import peripherals.sevenseg.{SevenSeg, SevenSegIO}
 import projects.typewriter.TypeWriterCore
 import rvcore.BareCore
-import rvcore.memory.{RAM, ROM}
+import rvcore.memory.{DROM, RAM, ROM}
 import rvcore.util.{BinaryLoader, Constructor}
 
 class vgatest extends BareCore {
